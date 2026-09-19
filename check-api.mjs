@@ -41,6 +41,21 @@ for (const [schema, fields] of Object.entries({
   const missing = fields.filter((field) => !has(schema, field));
   check(`${schema} still has ${fields.join(', ')}`, missing.length === 0, `missing ${missing.join(', ')}`);
 }
+// What the tool descriptions promise a model is checked too: a format the API
+// dropped, or a limit it moved, would otherwise be a lie told on every tools/list.
+const tools = readFileSync(new URL('./src/index.ts', import.meta.url), 'utf8');
+const accepted = schemas.File.properties.extension.enum;
+// Only the prose: lines that are nothing but a string literal.
+const prose = tools.split('\n').filter((line) => /^\s+'.*'(?: \+|,)?$/.test(line)).join('\n');
+const promised = [...new Set([...prose.matchAll(/\((?:[a-z0-9]+, )+[a-z0-9]+\)/g)].flatMap((m) => m[0].slice(1, -1).split(', ')))];
+check(`every format the descriptions name is accepted (${promised.length})`, promised.length > 20 && promised.every((ext) => accepted.includes(ext)), promised.filter((ext) => !accepted.includes(ext)).join(','));
+check('every format the API accepts is named in a description', accepted.every((ext) => promised.includes(ext) || ext === 'jpeg'), accepted.filter((ext) => !promised.includes(ext)).join(','));
+const texts = schemas.PublicTextTranslateRequest.properties.texts;
+check('translate_text states the limits the API enforces',
+  tools.includes(`max(${texts.maxItems})`) && tools.includes(`At most ${texts.maxItems} texts of ${texts.items.maxLength.toLocaleString('en')} characters, ${texts['x-max-total-characters'].toLocaleString('en')} characters per call`));
+const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
+const registry = JSON.parse(readFileSync(new URL('./server.json', import.meta.url), 'utf8'));
+check('server.json names the version package.json does', registry.version === pkg.version && registry.packages.every((p) => p.version === pkg.version && p.identifier === pkg.name));
 check('the language lists are where list_languages reads them', ['DocumentLanguage', 'TextLanguage'].every((name) => Array.isArray(schemas[name]?.oneOf)));
 console.log(failures ? `${failures} FAILURES` : 'The client matches the contract.');
 process.exit(failures ? 1 : 0);

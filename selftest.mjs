@@ -23,6 +23,7 @@ child.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
 let buffer = '';
 let strays = 0;
 const pending = new Map();
+const progress = [];
 child.stdout.on('data', (chunk) => {
   buffer += chunk.toString();
   let newline;
@@ -37,6 +38,7 @@ child.stdout.on('data', (chunk) => {
       strays += 1;  // a stray console.log on stdout breaks every client
       continue;
     }
+    if (message.method === 'notifications/progress') progress.push(message.params);
     pending.get(message.id)?.(message);
     pending.delete(message.id);
   }
@@ -51,11 +53,11 @@ function call(method, params, timeoutMs = 300_000) {
     pending.set(id, (message) => { clearTimeout(timer); done(message); });
   });
 }
-const tool = async (name, args) => {
-  const response = await call('tools/call', { name, arguments: args });
+const tool = async (name, args, progressToken) => {
+  const response = await call('tools/call', { name, arguments: args, ...(progressToken ? { _meta: { progressToken } } : {}) });
   let payload;
   try { payload = JSON.parse(response.result?.content?.[0]?.text ?? ''); } catch { payload = {}; }
-  return { isError: response.result?.isError === true, payload };
+  return { isError: response.result?.isError === true, payload, result: response.result };
 };
 
 let failures = 0;
@@ -69,6 +71,7 @@ const initialized = await call('initialize', { protocolVersion: '2024-11-05', ca
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 check('answers initialize as equalang, at the published version',
   initialized.result?.serverInfo?.name === 'equalang' && initialized.result?.serverInfo?.version === version, JSON.stringify(initialized.result?.serverInfo));
+check('tells the model, once, what is true of every tool', /estimate_cost/.test(initialized.result?.instructions ?? '') && /never with file contents/.test(initialized.result.instructions));
 child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' })}\n`);
 
 const tools = (await call('tools/list', {})).result?.tools ?? [];
@@ -81,7 +84,8 @@ check('read-only tools are marked so', ['get_credit_balance', 'list_languages'].
 
 console.log('\n== without a key');
 const languages = await tool('list_languages', { matching: 'chinese' });
-check('list_languages reads the live contract', !languages.isError && languages.payload.some?.((l) => l.code === 'zh-CN'), JSON.stringify(languages.payload).slice(0, 160));
+check('list_languages reads the live contract', !languages.isError && languages.payload.languages?.some((l) => l.code === 'zh-CN'), JSON.stringify(languages.payload).slice(0, 160));
+check('an answer is said twice: as text, and as structuredContent', JSON.stringify(languages.result?.structuredContent) === JSON.stringify(languages.payload));
 const relative = await tool('translate_file', { source: 'report.pdf', target_language: 'ja' });
 check('a relative path is refused with a reason, before anything is sent', relative.isError && relative.payload.code === 'INVALID_SOURCE');
 const both = await tool('translate_file', { source: '/tmp/a.pdf', file_id: 'x', target_language: 'ja' });
@@ -107,12 +111,15 @@ if (!keyed) {
     console.log('\n== a document, end to end (spends credits)');
     const estimate = await tool('estimate_cost', { path: documentPath });
     check('estimate_cost names a number before anything is spent', typeof estimate.payload.credits_to_translate === 'number' && estimate.payload.file_id, JSON.stringify(estimate.payload));
-    const translated = await tool('translate_file', { file_id: estimate.payload.file_id, target_language: 'zh-CN', wait_seconds: 200 });
+    const translated = await tool('translate_file', { file_id: estimate.payload.file_id, target_language: 'zh-CN', wait_seconds: 200 }, 'selftest-progress');
     console.log(`  ${JSON.stringify(translated.payload)}`);
     check('the job made from that file_id succeeds', translated.payload.status === 'SUCCEEDED');
     check('its result is written beside the source it was estimated from', (translated.payload.outputs ?? []).length > 0 && translated.payload.outputs.every((o) => existsSync(o.path) && o.path.startsWith(resolve(documentPath, '..'))));
     check('it charged no more than it was told it could', translated.payload.credits_charged <= estimate.payload.credits_to_translate + 1e-9);
     check('the answer is paths, not the document', JSON.stringify(translated.payload).length < 1200);
+    const links = (translated.result?.content ?? []).filter((c) => c.type === 'resource_link');
+    check('each file written is also named as a resource link', links.length === translated.payload.outputs?.length && links.every((l) => l.uri.startsWith('file://')));
+    check('a client that asked for progress was told how the job went', progress.some((p) => p.progressToken === 'selftest-progress' && typeof p.progress === 'number'), JSON.stringify(progress.slice(-2)));
     const again = await tool('check_job', { job_id: translated.payload.job_id });
     check('check_job on a job already collected answers with links, and writes nothing twice', again.payload.finished === true && again.payload.outputs?.[0]?.download_url && !again.payload.outputs[0].path);
     const cancelled = await tool('cancel_job', { job_id: translated.payload.job_id });

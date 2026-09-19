@@ -11,7 +11,7 @@
   "files": [
     "dist",
     "README.md",
-    "README.zh-CN.md",
+    "readme",
     "LICENSE"
   ],
   "scripts": {
@@ -59,7 +59,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4",
+    "@modelcontextprotocol/sdk": "^1.17.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

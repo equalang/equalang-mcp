@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 import { mkdir, stat, writeFile } from 'node:fs/promises';
-import { dirname, extname, isAbsolute, join, resolve } from 'node:path';
+import { homedir } from 'node:os';
+import { basename, dirname, extname, isAbsolute, join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
+import type { ServerNotification, ServerRequest } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 
 import { Equalang, EqualangError, SITE, VERSION, type Job, type Source } from './api.js';
@@ -46,10 +50,31 @@ if (!process.env.EQUALANG_API_KEY?.trim()) {
 // check_job, called later, has only the id. This process outlives the call.
 const destinations = new Map<string, string>();
 
-const server = new McpServer({ name: 'equalang', version: VERSION });
+const server = new McpServer({ name: 'equalang', version: VERSION }, {
+  // Read by the model once, before any tool: the things that are true of all of them.
+  instructions:
+    'Equalang translates whole files with their layout kept, transcribes recordings, and translates plain text. ' +
+    'Give tools an absolute path or a public URL; they answer with the paths they wrote, never with file contents -- do not read a result back unless asked. ' +
+    "Jobs spend the user's credits: before translate_file or transcribe_recording, tell the user the cost (estimate_cost gives the number for a file, free) and get their agreement; " +
+    'never process many files on your own say-so. A tool that answers before its job is done gives a job_id: call check_job with it. ' +
+    'Language codes come from list_languages. Retry a failure only when it says retryable: true.',
+});
 
-function text(payload: unknown) {
-  return { content: [{ type: 'text' as const, text: JSON.stringify(payload, null, 2) }] };
+/**
+ * An answer, said twice: as text for every client, and as structuredContent
+ * for those that read it. Files written to disk are also named as resource
+ * links, which is how MCP says "here is a file" without carrying its bytes.
+ */
+function text(payload: Record<string, unknown>, written: Array<{ path: string; kind: string }> = []) {
+  return {
+    content: [
+      { type: 'text' as const, text: JSON.stringify(payload, null, 2) },
+      ...written.map(({ path, kind }) => ({
+        type: 'resource_link' as const, uri: pathToFileURL(path).href, name: basename(path), description: kind,
+      })),
+    ],
+    structuredContent: payload,
+  };
 }
 
 /** `isError` marks it a failure; without it a model reads the message as a result and carries on. */
@@ -71,10 +96,11 @@ function sourceOf(source: string | undefined, fileId: string | undefined): Sourc
   }
   if (fileId) return { fileId };
   if (/^https?:\/\//i.test(source!)) return { url: source! };
-  if (!isAbsolute(source!)) {
+  const path = source!.startsWith('~/') ? join(homedir(), source!.slice(2)) : source!;
+  if (!isAbsolute(path)) {
     throw new EqualangError(`"${source}" is not an absolute path or an http(s) URL. This server does not share the agent's working directory.`, 'INVALID_SOURCE');
   }
-  return { path: source! };
+  return { path };
 }
 
 /**
@@ -132,26 +158,45 @@ async function report(job: Job, destination: string | undefined) {
   await mkdir(destination, { recursive: true });
   const saved = [];
   for (const output of job.outputs) {
-    const path = await freeName(destination, output.filename);
+    // The name is the API's; only its last component is trusted with a path on this machine.
+    const path = await freeName(destination, basename(output.filename));
     await writeFile(path, await api.fetchOutput(output));
     saved.push({ kind: output.kind, format: output.format, path });
   }
   destinations.delete(job.job_id);
-  return text({ ...summary, outputs: saved });
+  return text({ ...summary, outputs: saved }, saved);
+}
+
+type Extra = RequestHandlerExtra<ServerRequest, ServerNotification>;
+
+/**
+ * Tell a client that asked for it how the job is going. Progress is also what
+ * lets a client keep a long call open instead of timing it out.
+ */
+function progressTo(extra: Extra) {
+  const progressToken = extra._meta?.progressToken;
+  if (progressToken === undefined) return undefined;
+  return (job: Job) => {
+    void extra.sendNotification({
+      method: 'notifications/progress',
+      params: { progressToken, progress: job.progress_percent, total: 100, message: job.status.toLowerCase() },
+    }).catch(() => undefined);
+  };
 }
 
 async function run(task: 'translate' | 'transcribe', input: {
   source?: string; file_id?: string; target_language?: string; source_language?: string;
   options: Record<string, unknown>; output_dir?: string; wait_seconds?: number;
-}) {
+}, extra: Extra) {
   try {
     const source = sourceOf(input.source, input.file_id);
     const destination = destinationOf(source, input.output_dir);
     const created = await api.createJob(task, source, {
       targetLanguage: input.target_language, sourceLanguage: input.source_language, options: input.options,
     });
+    if ('fileId' in source) destinations.delete(source.fileId);
     const budget = Math.min(Math.max(input.wait_seconds ?? DEFAULT_WAIT_SECONDS, 0), MAX_WAIT_SECONDS) * 1000;
-    return await report(await api.wait(created.job_id, budget), destination);
+    return await report(await api.wait(created.job_id, budget, progressTo(extra)), destination);
   } catch (cause) {
     return failure(cause);
   }
@@ -163,7 +208,7 @@ const FILE_ID = z.string().optional().describe('A file already uploaded by estim
 const OUTPUT_DIR = z.string().optional().describe(
   'Directory for the results. Defaults to beside a local source. A URL source has no "beside": without this the answer carries temporary links.');
 const WAIT = z.number().optional().describe(`Seconds to wait before answering with a job_id instead (default ${DEFAULT_WAIT_SECONDS}, at most ${MAX_WAIT_SECONDS}).`);
-const LANGUAGE = 'A language code such as en, zh-CN, zh-TW, ja, ko, es, fr, de, pt, ru. Files take a dozen languages and text many more: list_languages has them.';
+const LANGUAGE = 'A language code such as en, zh-CN, zh-TW, ja, ko, es, fr, de. list_languages has the codes: fewer for files than for text.';
 const COSTS = 'COSTS THE USER\'S CREDITS: say what it will cost and get their agreement first -- estimate_cost gives the number for a file.';
 
 // Every tool that writes only adds files beside existing ones, so none is
@@ -190,9 +235,9 @@ server.registerTool('translate_file', {
     output_dir: OUTPUT_DIR,
     wait_seconds: WAIT,
   },
-}, async ({ bilingual, output_formats, ...input }) => run('translate', {
+}, async ({ bilingual, output_formats, ...input }, extra) => run('translate', {
   ...input, options: { subtitle_bilingual: bilingual, output_formats },
-}));
+}, extra));
 
 server.registerTool('transcribe_recording', {
   title: 'Transcribe a recording',
@@ -209,15 +254,16 @@ server.registerTool('transcribe_recording', {
     output_dir: OUTPUT_DIR,
     wait_seconds: WAIT,
   },
-}, async ({ output_formats, ...input }) => run('transcribe', { ...input, options: { output_formats } }));
+}, async ({ output_formats, ...input }, extra) => run('transcribe', { ...input, options: { output_formats } }, extra));
 
 server.registerTool('translate_text', {
   title: 'Translate text',
-  annotations: { ...READS, idempotentHint: true },
+  // Changes nothing on this machine, but spends credits: not read-only.
+  annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
   description:
     'Translate short plain texts and answer with the translations, in order. For strings in hand -- labels, messages, a paragraph; ' +
-    'for anything that is a file, use translate_file, which keeps its formatting. At most 50 texts and 20,000 characters per call. ' +
-    'Costs a small number of credits (about 1 per 100 tokens).',
+    'for anything that is a file, use translate_file, which keeps its formatting. At most 50 texts of 5,000 characters, 20,000 characters per call. ' +
+    'Charged by length, a small amount; the answer says how much.',
   inputSchema: {
     texts: z.array(z.string().min(1)).min(1).max(50).describe('The texts, each translated on its own.'),
     target_language: z.string().describe(`Language to translate into. ${LANGUAGE}`),
@@ -242,7 +288,7 @@ server.registerTool('estimate_cost', {
   annotations: WRITES,
   description:
     'Upload a local file without starting anything, and answer with the most a job on it can cost in credits. Free. ' +
-    'Pass the returned file_id to translate_file or transcribe_recording so the file is not uploaded twice; it is kept for an hour. ' +
+    'Pass the returned file_id to translate_file or transcribe_recording so the file is not uploaded twice; kept_until says how long it is held. ' +
     'A recording is charged for the speech actually heard, usually less than the estimate.',
   inputSchema: { path: z.string().describe('Absolute path to the file on this machine.') },
 }, async ({ path }) => {
@@ -270,10 +316,10 @@ server.registerTool('check_job', {
     output_dir: OUTPUT_DIR,
     wait_seconds: z.number().optional().describe(`Seconds to keep waiting if it is still running (default 0, at most ${MAX_WAIT_SECONDS}).`),
   },
-}, async ({ job_id, output_dir, wait_seconds }) => {
+}, async ({ job_id, output_dir, wait_seconds }, extra) => {
   try {
     const budget = Math.min(Math.max(wait_seconds ?? 0, 0), MAX_WAIT_SECONDS) * 1000;
-    return await report(await api.wait(job_id, budget), output_dir ? resolve(output_dir) : destinations.get(job_id));
+    return await report(await api.wait(job_id, budget, progressTo(extra)), output_dir ? resolve(output_dir) : destinations.get(job_id));
   } catch (cause) {
     return failure(cause);
   }
@@ -318,7 +364,7 @@ server.registerTool('list_languages', {
   try {
     const all = await api.languages(kind === 'text' ? 'text' : 'document');
     const wanted = matching?.trim().toLowerCase();
-    return text(wanted ? all.filter(({ code, name }) => `${code} ${name}`.toLowerCase().includes(wanted)) : all);
+    return text({ languages: wanted ? all.filter(({ code, name }) => `${code} ${name}`.toLowerCase().includes(wanted)) : all });
   } catch (cause) {
     return failure(cause);
   }

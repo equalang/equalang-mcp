@@ -212,10 +212,11 @@ export class Equalang {
    * runs out is returned, and the caller is told how to pick the job up.
    * The pause between looks is the one the API asks for.
    */
-  async wait(jobId: string, budgetMs: number): Promise<Job> {
+  async wait(jobId: string, budgetMs: number, seen?: (job: Job) => void): Promise<Job> {
     const deadline = Date.now() + budgetMs;
     for (;;) {
       const { job, retryAfterMs } = await this.job(jobId);
+      seen?.(job);
       const left = deadline - Date.now();
       if (job.finished || left <= 0) return job;
       await sleep(Math.min(retryAfterMs, left));
