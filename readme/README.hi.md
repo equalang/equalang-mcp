@@ -1,18 +1,64 @@
-# Equalang MCP सर्वर
+# equalang-mcp
+
+[![npm](https://img.shields.io/npm/v/@equalang/mcp.svg)](https://www.npmjs.com/package/@equalang/mcp)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../LICENSE)
+[![MCP](https://img.shields.io/badge/Model_Context_Protocol-stdio-000000.svg)](https://modelcontextprotocol.io)
+[![Node](https://img.shields.io/badge/node-%3E%3D18-339933.svg)](https://nodejs.org)
 
 [English](../README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Português](README.pt.md) · [Italiano](README.it.md) · [Русский](README.ru.md) · [Polski](README.pl.md) · [Türkçe](README.tr.md) · [Tiếng Việt](README.vi.md) · [Bahasa Indonesia](README.id.md) · [ไทย](README.th.md) · **हिन्दी** · [العربية](README.ar.md)
 
-अपने एजेंट को [Equalang](https://equalang.com) दें: लेआउट बनाए रखते हुए पूरी फ़ाइलों का अनुवाद, रिकॉर्डिंग का ट्रांसक्रिप्शन, स्ट्रिंग का अनुवाद।
+[वेबसाइट](https://equalang.com) · [कीमतें](https://equalang.com/pricing) · [डेवलपर दस्तावेज़](https://equalang.com/developers) · [API कुंजियाँ](https://equalang.com/api-keys)
 
-- **दस्तावेज़** - PDF, DOCX, PPTX, XLSX, EPUB, HTML, TXT - उसी फ़ॉर्मैट में लौटते हैं; तालिकाएँ, चित्र और सूत्र अपनी जगह पर रहते हैं।
-- **सबटाइटल** (SRT, VTT) और **चित्र** (JPG, PNG, WebP, BMP)।
-- **ऑडियो और वीडियो** - MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM, MKV - अनूदित सबटाइटल के रूप में, या बोली गई भाषा में ट्रांसक्रिप्ट के रूप में लौटते हैं।
+> **कीवर्ड:** दस्तावेज़ अनुवाद, PDF अनुवाद, PDF ट्रांसलेट कैसे करें, लेआउट बनाए रखते हुए PDF अनुवाद, Word फ़ाइल अनुवाद, PPT अनुवाद, Excel अनुवाद, EPUB अनुवाद, सबटाइटल अनुवाद, SRT ट्रांसलेटर, इमेज ट्रांसलेट, फोटो से टेक्स्ट अनुवाद, वीडियो अनुवाद, ऑडियो से टेक्स्ट, स्पीच टू टेक्स्ट, AI ट्रांसलेटर, mcp server, model context protocol, claude mcp, cursor mcp, translation api
 
-एजेंट एक पाथ या URL देता है और बदले में पाथ पाता है। फ़ाइल की सामग्री कभी बातचीत में नहीं आती।
+**फ़ाइल का अनुवाद करें, लेआउट वैसा ही रखें।** [Equalang](https://equalang.com) के लिए एक MCP सर्वर। Equalang एक AI ट्रांसलेटर है जो पूरी फ़ाइलों पर काम करता है: PDF वापस PDF बनकर आता है, प्रेज़ेंटेशन वापस प्रेज़ेंटेशन बनकर, और तालिकाएँ, चित्र और सूत्र अपनी जगह पर रहते हैं। यह सबटाइटल और चित्रों का भी अनुवाद करता है, ऑडियो और वीडियो को अनूदित सबटाइटल या ट्रांसक्रिप्ट में बदलता है, और स्ट्रिंग का थोक में अनुवाद करता है। Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code और हर दूसरे MCP क्लाइंट में चलता है।
+
+```bash
+claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
+```
+
+## ख़ूबियाँ
+
+- **जो फ़ॉर्मैट गया, वही लौटा** - PDF, DOCX, PPTX, XLSX, EPUB, HTML और TXT उसी फ़ॉर्मैट में लौटते हैं, संपादन योग्य रहते हैं, और तालिकाएँ, चित्र, सूत्र और पेज लेआउट अपनी जगह पर रहते हैं
+- **सबटाइटल और चित्र** - SRT और VTT की टाइमिंग बनी रहती है, चाहें तो अनुवाद के ऊपर मूल पंक्ति भी रखी जा सकती है; JPG, PNG, WebP और BMP इस तरह लौटते हैं कि चित्र के भीतर का टेक्स्ट अनूदित हो चुका होता है
+- **ऑडियो और वीडियो** - MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM और MKV अनूदित सबटाइटल बन जाते हैं, या बोली गई भाषा में ट्रांसक्रिप्ट (SRT, VTT, TXT, JSON)
+- **थोक में टेक्स्ट** - अलग-अलग स्ट्रिंग का उसी क्रम में अनुवाद, या एक लंबा टेक्स्ट (100,000 वर्णों तक) जिसे Equalang ख़ुद वाक्यों पर काटता है; टेक्स्ट के लिए 100+ भाषाएँ, फ़ाइलों के लिए 12
+- **पूरी फ़ाइल, कॉपी-पेस्ट नहीं** - प्रति फ़ाइल 100 MB तक, किसी पाथ से या सार्वजनिक URL से; टेक्स्ट बॉक्स में टुकड़े-टुकड़े करके डालने की ज़रूरत नहीं
+- **कोई टोकन खर्च नहीं** - एजेंट एक पाथ या URL देता है और बदले में पाथ पाता है; 300 पन्नों का PDF कभी बातचीत में नहीं आता
+- **काम से पहले कीमत** - `estimate_cost` निःशुल्क बताता है कि किसी जॉब की अधिकतम लागत कितनी हो सकती है; विफल और रद्द किए गए जॉब का कोई शुल्क नहीं; रिकॉर्डिंग का शुल्क वास्तव में सुनी गई वाणी के हिसाब से लगता है; क्रेडिट कभी एक्सपायर नहीं होते
+
+## कुंजी पाएँ
+
+<https://equalang.com> पर साइन अप करें और <https://equalang.com/api-keys> पर एक कुंजी बनाएँ। नए खातों को शुरुआत में मुफ़्त क्रेडिट मिलते हैं - इतने कि एक दस्तावेज़ का अनुवाद करके देख सकें कि नतीजा कैसा आता है।
+
+कुंजी MCP क्लाइंट के कॉन्फ़िग के एनवायरनमेंट वेरिएबल में जाती है, URL में कभी नहीं। यह सिर्फ़ एक बार दिखाई जाती है; Equalang उसका केवल हैश रखता है। कुंजी के बिना भी सर्वर चालू होता है और अपने टूल की सूची देता है; जिस टूल को कुंजी चाहिए, वह बताता है कि कुंजी कैसे मिलेगी।
 
 ## इंस्टॉल
 
-<https://equalang.com/api-keys> पर एक कुंजी बनाएँ, फिर सर्वर को अपने क्लाइंट में जोड़ें:
+Node 18 या उससे नया चाहिए।
+
+<details open>
+<summary><b>Claude Code</b></summary>
+
+```bash
+claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
+```
+
+`-s user` इसे हर प्रोजेक्ट में उपलब्ध कराता है; डिफ़ॉल्ट स्कोप `local` सर्वर को सिर्फ़ उसी डायरेक्टरी में लोड करता है जहाँ से कमांड चलाया गया था।
+</details>
+
+<details>
+<summary><b>OpenAI Codex</b></summary>
+
+```bash
+codex mcp add equalang --env EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
+```
+</details>
+
+<details>
+<summary><b>Claude Desktop, Cursor, Windsurf, Cline और JSON से कॉन्फ़िगर होने वाले अन्य क्लाइंट</b></summary>
+
+इसे क्लाइंट के MCP कॉन्फ़िग में जोड़ें - `claude_desktop_config.json`, `~/.cursor/mcp.json`, `~/.codeium/windsurf/mcp_config.json`, या वह फ़ाइल जो आपके क्लाइंट के दस्तावेज़ बताते हैं:
 
 ```json
 {
@@ -20,16 +66,22 @@
     "equalang": {
       "command": "npx",
       "args": ["-y", "@equalang/mcp"],
-      "env": { "EQUALANG_API_KEY": "el_..." }
+      "env": { "EQUALANG_API_KEY": "el_your_key" }
     }
   }
 }
 ```
+</details>
 
-Claude Code: `claude mcp add --transport stdio equalang --env EQUALANG_API_KEY=el_... -- npx -y @equalang/mcp`  
-Codex: `codex mcp add equalang --env EQUALANG_API_KEY=el_... -- npx -y @equalang/mcp`
+<details>
+<summary><b>VS Code</b></summary>
 
-Node 18 या उससे नया चाहिए। कुंजी के बिना भी सर्वर चालू होता है और अपने टूल की सूची देता है; जिस टूल को कुंजी चाहिए, वह बताता है कि कुंजी कैसे मिलेगी।
+```bash
+code --add-mcp '{"name":"equalang","command":"npx","args":["-y","@equalang/mcp"],"env":{"EQUALANG_API_KEY":"el_your_key"}}'
+```
+</details>
+
+स्किल ज़्यादा पसंद है? [equalang-skill](https://github.com/equalang/equalang-skill) यही ऑपरेशन एक Agent Skill के रूप में देता है - एक Python स्क्रिप्ट, इंस्टॉल करने को कुछ नहीं।
 
 ## टूल
 
@@ -44,11 +96,29 @@ Node 18 या उससे नया चाहिए। कुंजी के 
 | `get_credit_balance` | खाते के क्रेडिट। |
 | `list_languages` | भाषा कोड और नाम, लाइव API से पढ़े हुए। कुंजी की ज़रूरत नहीं। |
 
-**क्रेडिट।** काम में खाते के क्रेडिट खर्च होते हैं - वही बैलेंस जो वेबसाइट पर है - इसलिए सर्वर मॉडल से कहता है कि पहले लागत बताए और सहमति ले; यह संख्या `estimate_cost` से आती है। रिकॉर्डिंग का शुल्क वास्तव में सुनी गई वाणी के हिसाब से लगता है, इसलिए लागत आम तौर पर अनुमान से कम आती है।
+## जानने लायक़ चार बातें
 
 **भाषाएँ।** कोड `en`, `zh-CN`, `ja` जैसे होते हैं। इस पैकेज में कोई सूची पहले से नहीं रखी गई है: `list_languages` कोड और नाम लाइव API से पढ़ता है (फ़ाइलों के लिए टेक्स्ट से कम), इसलिए Equalang जो भाषा जोड़ता है वह बिना अपडेट के उपलब्ध हो जाती है। स्रोत भाषा न दें तो वह अपने-आप पहचान ली जाती है।
 
-**फ़ॉर्मैट और सीमाएँ।** ऊपर दिए गए फ़ॉर्मैट, प्रति फ़ाइल 100 MB तक; `translate_text` 5,000 वर्णों तक के अधिकतम 50 टेक्स्ट लेता है (प्रति कॉल 20,000), या 100,000 तक का एक टेक्स्ट।
+**क्रेडिट।** काम में खाते के क्रेडिट खर्च होते हैं - वही बैलेंस जो वेबसाइट पर है - इसलिए सर्वर मॉडल से कहता है कि पहले लागत बताए और सहमति ले; यह संख्या `estimate_cost` से आती है।
+
+**जॉब में कुछ मिनट लगते हैं।** टूल अपने जॉब का इंतज़ार करता है, पर उससे ज़्यादा नहीं जितना क्लाइंट एक कॉल को देता है (डिफ़ॉल्ट 50 s, `wait_seconds` अधिकतम 240)। उसके बाद मॉडल को जॉब id मिलता है और `check_job` कॉल करने को कहा जाता है, जो नतीजों को उनकी सही जगह सहेज देता है।
+
+**सीमाएँ।** प्रति फ़ाइल 100 MB तक; `translate_text` 5,000 वर्णों तक के अधिकतम 50 टेक्स्ट लेता है (प्रति कॉल 20,000), या 100,000 तक का एक टेक्स्ट।
+
+## अक्सर पूछे जाने वाले सवाल
+
+**क्या अनूदित PDF का लेआउट बना रहता है?**
+हाँ - यही तो इसका मक़सद है। टेक्स्ट वहीं वापस रखा जाता है जहाँ वह था, और तालिकाएँ, चित्र और सूत्र अपनी जगह पर रहते हैं; DOCX, PPTX या XLSX संपादन योग्य रहता है।
+
+**क्या मेरा दस्तावेज़ मॉडल को भेजा जाता है?**
+नहीं। सर्वर फ़ाइल को Equalang पर अपलोड करता है और जवाब में एक पाथ देता है। 300 पन्नों के शोध-पत्र पर भी कोई टोकन खर्च नहीं होता।
+
+**क्या यह चित्र के भीतर के टेक्स्ट का अनुवाद कर सकता है?**
+हाँ। JPG, PNG, WebP या BMP के भीतर का टेक्स्ट पहचाना जाता है, अनूदित होता है और वापस चित्र में बना दिया जाता है।
+
+**एक जॉब की लागत कितनी होती है?**
+कुछ भी शुरू होने से पहले `estimate_cost` बता देता है, और यह निःशुल्क है। कीमतें <https://equalang.com/pricing> पर हैं।
 
 ## यह कैसे बना है
 
@@ -69,6 +139,15 @@ EQUALANG_API_KEY=el_... node selftest.mjs file.txt talk.mp3  # और असल�
 node check-api.mjs                                         # पाथ, फ़ील्ड, और टूल विवरणों के वादे, API के लाइव कॉन्ट्रैक्ट से मिलान
 ```
 
-`EQUALANG_BASE_URL` सर्वर को किसी दूसरे डिप्लॉयमेंट की ओर मोड़ता है। API स्वयं: <https://equalang.com/llms.txt>।
+`EQUALANG_BASE_URL` सर्वर को किसी दूसरे डिप्लॉयमेंट की ओर मोड़ता है।
 
-Apache-2.0.
+## लिंक
+
+- [Equalang](https://equalang.com) · [कीमतें](https://equalang.com/pricing) · [डेवलपर दस्तावेज़](https://equalang.com/developers)
+- एजेंटों के लिए API: [llms.txt](https://equalang.com/llms.txt) · [llms-full.txt](https://equalang.com/llms-full.txt) · [OpenAPI](https://equalang.com/api/backend/v1/openapi.json)
+- [equalang-skill](https://github.com/equalang/equalang-skill) - यही ऑपरेशन एक Agent Skill के रूप में
+- सवाल: <support@equalang.com>
+
+## लाइसेंस
+
+[Apache-2.0](../LICENSE) © Equalang

@@ -1,18 +1,64 @@
-# Server MCP Equalang
+# equalang-mcp
+
+[![npm](https://img.shields.io/npm/v/@equalang/mcp.svg)](https://www.npmjs.com/package/@equalang/mcp)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](../LICENSE)
+[![MCP](https://img.shields.io/badge/Model_Context_Protocol-stdio-000000.svg)](https://modelcontextprotocol.io)
+[![Node](https://img.shields.io/badge/node-%3E%3D18-339933.svg)](https://nodejs.org)
 
 [English](../README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Português](README.pt.md) · [Italiano](README.it.md) · [Русский](README.ru.md) · [Polski](README.pl.md) · [Türkçe](README.tr.md) · [Tiếng Việt](README.vi.md) · **Bahasa Indonesia** · [ไทย](README.th.md) · [हिन्दी](README.hi.md) · [العربية](README.ar.md)
 
-Berikan [Equalang](https://equalang.com) kepada agen: menerjemahkan file utuh dengan tata letak tetap terjaga, mentranskripsikan rekaman, menerjemahkan string.
+[Situs web](https://equalang.com) · [Harga](https://equalang.com/pricing) · [Dokumentasi developer](https://equalang.com/developers) · [Kunci API](https://equalang.com/api-keys)
 
-- **Dokumen** - PDF, DOCX, PPTX, XLSX, EPUB, HTML, TXT - kembali dalam format yang sama, dengan tabel, gambar, dan rumus tetap di tempatnya.
-- **Subtitle** (SRT, VTT) dan **gambar** (JPG, PNG, WebP, BMP).
-- **Audio dan video** - MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM, MKV - kembali sebagai subtitle terjemahan, atau sebagai transkrip dalam bahasa yang diucapkan.
+> **Kata kunci:** terjemahan dokumen, translate pdf, terjemahkan pdf tanpa merusak format, translate file word, translate docx, translate ppt, translate file excel, translate epub, translate subtitle, terjemahkan file srt, translate teks di gambar, translate video, transkripsi audio, ubah suara jadi teks, penerjemah ai, api terjemahan, mcp server, model context protocol, claude mcp, cursor mcp, translation api
 
-Agen memberikan path atau URL dan menerima path sebagai balasan. Isi file tidak pernah masuk ke percakapan.
+**Terjemahkan filenya, pertahankan tata letaknya.** Sebuah server MCP untuk [Equalang](https://equalang.com) - penerjemah AI yang bekerja pada file utuh: PDF kembali sebagai PDF, presentasi sebagai presentasi, dengan tabel, gambar, dan rumus tetap di tempatnya. Ia juga menerjemahkan subtitle dan gambar, mengubah audio dan video menjadi subtitle terjemahan atau transkrip, serta menerjemahkan string secara massal. Berjalan di Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code, dan semua klien MCP lainnya.
+
+```bash
+claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
+```
+
+## Fitur
+
+- **Format masuk, format yang sama keluar** - PDF, DOCX, PPTX, XLSX, EPUB, HTML, dan TXT kembali dalam format yang sama, tetap bisa diedit, dengan tabel, gambar, rumus, dan tata letak halaman tetap di tempatnya
+- **Subtitle dan gambar** - SRT dan VTT mempertahankan timing-nya, dengan opsi baris asli di atas terjemahan; JPG, PNG, WebP, dan BMP kembali dengan teks di dalam gambar sudah diterjemahkan
+- **Audio dan video** - MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM, dan MKV menjadi subtitle terjemahan, atau transkrip dalam bahasa yang diucapkan (SRT, VTT, TXT, JSON)
+- **Teks secara massal** - string-string terpisah diterjemahkan sesuai urutan, atau satu teks panjang (hingga 100,000 karakter) yang dipotong sendiri oleh Equalang per kalimat; 100+ bahasa untuk teks, 12 untuk file
+- **File utuh, tanpa salin-tempel** - hingga 100 MB per file, dari path atau URL publik; tidak ada yang perlu dipecah ke kotak teks
+- **Tidak memakan token** - agen memberikan path atau URL dan menerima path sebagai balasan; PDF 300 halaman tidak pernah masuk ke percakapan
+- **Harga sebelum job dimulai** - `estimate_cost` menjawab dengan biaya maksimum sebuah job, gratis; job yang gagal atau dibatalkan tidak dikenai biaya; rekaman ditagih berdasarkan ucapan yang benar-benar terdengar; kredit tidak pernah kedaluwarsa
+
+## Dapatkan kunci
+
+Daftar di <https://equalang.com> dan buat kunci di <https://equalang.com/api-keys>. Akun baru langsung mendapat kredit gratis - cukup untuk mencoba satu dokumen dan melihat hasilnya.
+
+Kunci ditaruh di variabel lingkungan pada konfigurasi klien MCP, tidak pernah di dalam URL. Kunci hanya ditampilkan sekali; Equalang hanya menyimpan hash-nya. Tanpa kunci, server tetap berjalan dan menampilkan daftar tool-nya; tool yang membutuhkan kunci akan menjawab dengan cara mendapatkannya.
 
 ## Instalasi
 
-Buat kunci di <https://equalang.com/api-keys>, lalu tambahkan server ke klien Anda:
+Membutuhkan Node 18 atau lebih baru.
+
+<details open>
+<summary><b>Claude Code</b></summary>
+
+```bash
+claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
+```
+
+`-s user` memasangnya di semua proyek; cakupan bawaan, `local`, hanya memuat server di direktori tempat perintah dijalankan.
+</details>
+
+<details>
+<summary><b>OpenAI Codex</b></summary>
+
+```bash
+codex mcp add equalang --env EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
+```
+</details>
+
+<details>
+<summary><b>Claude Desktop, Cursor, Windsurf, Cline, dan klien lain yang dikonfigurasi lewat JSON</b></summary>
+
+Tambahkan ini ke konfigurasi MCP klien - `claude_desktop_config.json`, `~/.cursor/mcp.json`, `~/.codeium/windsurf/mcp_config.json`, atau file yang disebutkan dokumentasi klien Anda:
 
 ```json
 {
@@ -20,16 +66,22 @@ Buat kunci di <https://equalang.com/api-keys>, lalu tambahkan server ke klien An
     "equalang": {
       "command": "npx",
       "args": ["-y", "@equalang/mcp"],
-      "env": { "EQUALANG_API_KEY": "el_..." }
+      "env": { "EQUALANG_API_KEY": "el_your_key" }
     }
   }
 }
 ```
+</details>
 
-Claude Code: `claude mcp add --transport stdio equalang --env EQUALANG_API_KEY=el_... -- npx -y @equalang/mcp`  
-Codex: `codex mcp add equalang --env EQUALANG_API_KEY=el_... -- npx -y @equalang/mcp`
+<details>
+<summary><b>VS Code</b></summary>
 
-Membutuhkan Node 18 atau lebih baru. Tanpa kunci, server tetap berjalan dan menampilkan daftar tool-nya; tool yang membutuhkan kunci akan menjawab dengan cara mendapatkannya.
+```bash
+code --add-mcp '{"name":"equalang","command":"npx","args":["-y","@equalang/mcp"],"env":{"EQUALANG_API_KEY":"el_your_key"}}'
+```
+</details>
+
+Lebih suka skill? [equalang-skill](https://github.com/equalang/equalang-skill) menawarkan operasi yang sama sebagai Agent Skill - satu skrip Python, tidak ada yang perlu diinstal.
 
 ## Tool
 
@@ -44,11 +96,29 @@ Membutuhkan Node 18 atau lebih baru. Tanpa kunci, server tetap berjalan dan mena
 | `get_credit_balance` | Kredit akun. |
 | `list_languages` | Kode dan nama bahasa, dibaca dari API secara langsung. Tidak memerlukan kunci. |
 
-**Kredit.** Pekerjaan memakai kredit akun - saldo yang sama dengan di situs web - sehingga server meminta model menyebutkan biayanya dan mendapat persetujuan terlebih dahulu; angkanya berasal dari `estimate_cost`. Rekaman ditagih berdasarkan ucapan yang benar-benar terdengar, jadi biasanya lebih murah daripada estimasi.
+## Empat hal yang perlu diketahui
 
 **Bahasa.** Kode berbentuk seperti `en`, `zh-CN`, `ja`. Tidak ada daftar yang ditanam dalam paket ini: `list_languages` membaca kode dan nama dari API secara langsung (untuk file lebih sedikit daripada untuk teks), sehingga bahasa yang ditambahkan Equalang langsung tersedia tanpa pembaruan. Kosongkan bahasa sumber agar terdeteksi otomatis.
 
-**Format dan batas.** Format-format di atas, hingga 100 MB per file; `translate_text` menerima hingga 50 teks masing-masing 5,000 karakter (20,000 per panggilan), atau satu teks hingga 100,000.
+**Kredit.** Pekerjaan memakai kredit akun - saldo yang sama dengan di situs web - sehingga server meminta model menyebutkan biayanya dan mendapat persetujuan terlebih dahulu; angkanya berasal dari `estimate_cost`.
+
+**Job memakan waktu beberapa menit.** Tool menunggu job-nya, tetapi tidak melebihi waktu yang diizinkan klien untuk satu panggilan (bawaan 50 s, `wait_seconds` hingga 240). Setelah itu model menerima id job dan diminta memanggil `check_job`, yang menyimpan hasilnya di tempat yang semestinya.
+
+**Batas.** Hingga 100 MB per file; `translate_text` menerima hingga 50 teks masing-masing 5,000 karakter (20,000 per panggilan), atau satu teks hingga 100,000.
+
+## Pertanyaan yang sering diajukan
+
+**Apakah PDF hasil terjemahan mempertahankan tata letaknya?**
+Ya - justru itu intinya. Teks dikembalikan ke posisi semula, dan tabel, gambar, serta rumus tetap di tempatnya; DOCX, PPTX, atau XLSX tetap bisa diedit.
+
+**Apakah dokumen saya dikirim ke model?**
+Tidak. Server mengunggah file ke Equalang dan menjawab dengan sebuah path. Makalah 300 halaman tidak memakan token sama sekali.
+
+**Bisakah ia menerjemahkan teks di dalam gambar?**
+Bisa. Teks dalam JPG, PNG, WebP, atau BMP dikenali, diterjemahkan, lalu digambar kembali ke dalam gambar.
+
+**Berapa biaya sebuah job?**
+`estimate_cost` memberi tahu sebelum apa pun dimulai, dan itu gratis. Daftar harga ada di <https://equalang.com/pricing>.
 
 ## Cara pembuatannya
 
@@ -69,6 +139,15 @@ EQUALANG_API_KEY=el_... node selftest.mjs file.txt talk.mp3  # dan job sungguhan
 node check-api.mjs                                         # path, field, dan apa yang dijanjikan deskripsi tool, dicek terhadap kontrak API yang berlaku
 ```
 
-`EQUALANG_BASE_URL` mengarahkan server ke deployment lain. API-nya sendiri: <https://equalang.com/llms.txt>.
+`EQUALANG_BASE_URL` mengarahkan server ke deployment lain.
 
-Apache-2.0.
+## Tautan
+
+- [Equalang](https://equalang.com) · [Harga](https://equalang.com/pricing) · [Dokumentasi developer](https://equalang.com/developers)
+- API untuk agen: [llms.txt](https://equalang.com/llms.txt) · [llms-full.txt](https://equalang.com/llms-full.txt) · [OpenAPI](https://equalang.com/api/backend/v1/openapi.json)
+- [equalang-skill](https://github.com/equalang/equalang-skill) - operasi yang sama sebagai Agent Skill
+- Pertanyaan: <support@equalang.com>
+
+## Lisensi
+
+[Apache-2.0](../LICENSE) © Equalang
