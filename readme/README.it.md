@@ -22,10 +22,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - **Stesso formato in ingresso e in uscita** – PDF, DOCX, PPTX, XLSX, EPUB, HTML e TXT tornano nello stesso formato, ancora modificabili, con tabelle, immagini, formule e impaginazione al loro posto
 - **Sottotitoli e immagini** – SRT e VTT conservano i tempi, volendo con la riga originale sopra la traduzione; JPG, PNG, WebP e BMP tornano con il testo nell'immagine tradotto
 - **Audio e video** – MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM e MKV diventano sottotitoli tradotti, oppure una trascrizione nella lingua parlata (SRT, VTT, TXT, JSON)
-- **Testo in blocco** – stringhe separate tradotte nell'ordine dato, oppure un unico testo lungo (fino a 100.000 caratteri) che Equalang divide da sé in frasi; oltre 100 lingue per il testo, 12 per i file
-- **File interi, niente copia e incolla** – fino a 100 MB per file, da un percorso o da un URL pubblico; nulla da spezzettare in caselle di testo
-- **Non costa token** – l'agente passa un percorso o un URL e riceve in cambio dei percorsi; un PDF di 300 pagine non entra mai nella conversazione
-- **Il prezzo prima del job** – `estimate_cost` risponde, gratis, con il costo massimo di un job; i job falliti o annullati non costano nulla; una registrazione viene addebitata per il parlato effettivamente rilevato; i crediti non scadono mai
+- **Testo in blocco** – stringhe separate tradotte nell'ordine dato, oppure un unico testo lungo (fino a 100.000 caratteri) che Equalang divide da sé in frasi
+- **Oltre 100 lingue** – oltre 100 per il testo e 12 per i file, con la lingua di origine rilevata automaticamente se la ometti
 
 ## Ottieni una chiave
 
@@ -96,15 +94,7 @@ Preferisci una skill? [equalang-skill](https://github.com/equalang/equalang-skil
 | `get_credit_balance` | I crediti dell'account. |
 | `list_languages` | Codici e nomi delle lingue, letti dall'API in tempo reale. Non richiede chiave. |
 
-## Quattro cose da sapere
-
-**Lingue.** I codici hanno la forma `en`, `zh-CN`, `ja`. Nel pacchetto non c'è alcun elenco incorporato: `list_languages` legge codici e nomi dall'API in tempo reale (meno per i file che per il testo), quindi una lingua aggiunta da Equalang è disponibile senza aggiornamenti. Ometti la lingua di origine per farla rilevare automaticamente.
-
-**Crediti.** Il lavoro consuma i crediti dell'account – lo stesso saldo del sito web – perciò il server dice al modello di indicare prima il costo e ottenere il consenso; la cifra viene da `estimate_cost`.
-
-**I job durano minuti.** Uno strumento aspetta il proprio job, ma non oltre quanto un client concede a una chiamata (50 s per impostazione predefinita, `wait_seconds` fino a 240). Dopodiché il modello riceve l'id del job con l'indicazione di chiamare `check_job`, che salva i risultati al posto giusto.
-
-**Limiti.** Fino a 100 MB per file; `translate_text` accetta fino a 50 testi da 5.000 caratteri (20.000 per chiamata), oppure un unico testo fino a 100.000.
+I codici delle lingue hanno la forma `en`, `zh-CN`, `ja`; `list_languages` li legge dall'API in tempo reale, quindi una lingua aggiunta da Equalang è disponibile senza aggiornamenti. I job durano minuti – uno strumento aspetta fino a `wait_seconds` (50 s per impostazione predefinita, 240 al massimo), poi restituisce l'id del job per `check_job`.
 
 ## Domande frequenti
 
@@ -119,27 +109,6 @@ Sì. Il testo in un JPG, PNG, WebP o BMP viene riconosciuto, tradotto e ridisegn
 
 **Quanto costa un job?**
 Lo dice `estimate_cost` prima che parta qualsiasi cosa, ed è gratuito. I prezzi sono su <https://equalang.com/pricing>.
-
-## Com'è costruito
-
-Tre decisioni, ciascuna con la sua ragione:
-
-1. **Un file non passa mai attraverso il modello.** MCP non ha un tipo file, e un PDF da 5 MB nel risultato di uno strumento costa una fortuna in contesto senza dire nulla. Uno strumento riceve *dove si trova un file* – un percorso assoluto su questa macchina, oppure un URL `http(s)` pubblico – e risponde con *dove sono stati scritti i risultati*. Un URL viene passato a Equalang, che lo scarica da sé; qui non si scarica nulla solo per ricaricarlo.
-2. **Un job vive dentro una sola chiamata di strumento.** Restituire un id di job e confidare che il modello faccia polling è un ciclo che viene abbandonato a metà. Lo strumento aspetta – sospendendosi tra un controllo e l'altro per il tempo richiesto dal `Retry-After` dell'API, e comunicando l'avanzamento al client che lo ha chiesto – ma non oltre quanto un client concede a una chiamata (50 s per impostazione predefinita, `wait_seconds` fino a 240). Dopodiché il modello riceve l'id con l'indicazione di chiamare `check_job`; il server ricorda dove vanno i risultati di quel job.
-3. **Le risposte dell'API vengono riportate, non indovinate.** Se un errore si può ritentare lo dice il `retryable` dell'API, non un'interpretazione dei codici di stato. Quanto può costare un job lo dice il `quote` dell'API, non una tariffa copiata in questo pacchetto. L'elenco delle lingue viene letto dal documento OpenAPI dell'API. Una richiesta che crea un job porta la stessa `Idempotency-Key` in tutti i tentativi di questo client, così una risposta persa non può diventare un secondo job addebitato.
-
-Una risposta viene data due volte – come testo per tutti i client e come `structuredContent` per quelli che lo leggono – e ogni file scritto viene indicato anche come `resource_link`, che è il modo in cui MCP dice «ecco un file» senza trasportarne i byte. Ciò che vale per tutti gli strumenti (percorsi in ingresso, percorsi in uscita, chiedere prima di spendere) è detto una sola volta, nelle `instructions` del server. I risultati non sovrascrivono mai: a un nome già occupato si aggiunge ` (1)`. I percorsi relativi vengono rifiutati: questo processo non condivide la directory di lavoro dell'agente.
-
-## Sviluppo
-
-```bash
-npm install && npm run build
-node selftest.mjs                                          # protocollo, elenco degli strumenti, lo strumento senza chiave
-EQUALANG_API_KEY=el_... node selftest.mjs file.txt talk.mp3  # e job reali (consuma crediti)
-node check-api.mjs                                         # percorsi, campi e ciò che le descrizioni degli strumenti promettono, rispetto al contratto attuale dell'API
-```
-
-`EQUALANG_BASE_URL` punta il server verso un altro deployment.
 
 ## Link
 

@@ -22,10 +22,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - **Le format à l'entrée, le même à la sortie** : PDF, DOCX, PPTX, XLSX, EPUB, HTML et TXT reviennent dans le même format, toujours modifiables, tableaux, images, formules et mise en page à leur place
 - **Sous-titres et images** : SRT et VTT gardent leur minutage, avec au besoin la ligne d'origine au-dessus de la traduction ; JPG, PNG, WebP et BMP reviennent avec le texte de l'image traduit
 - **Audio et vidéo** : MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM et MKV deviennent des sous-titres traduits, ou une transcription dans la langue parlée (SRT, VTT, TXT, JSON)
-- **Texte par lots** : des chaînes séparées traduites dans l'ordre, ou un seul long texte (jusqu'à 100 000 caractères) qu'Equalang découpe lui-même par phrases ; plus de 100 langues pour le texte, 12 pour les fichiers
-- **Des fichiers entiers, sans copier-coller** : jusqu'à 100 MB par fichier, depuis un chemin ou une URL publique ; rien à découper dans des zones de texte
-- **Aucun token consommé** : l'agent passe un chemin ou une URL et reçoit des chemins en retour ; un PDF de 300 pages n'entre jamais dans la conversation
-- **Le prix avant la tâche** : `estimate_cost` répond, gratuitement, avec le coût maximal d'une tâche ; les tâches échouées ou annulées ne coûtent rien ; un enregistrement est facturé pour la parole réellement entendue ; les crédits n'expirent jamais
+- **Texte par lots** : des chaînes séparées traduites dans l'ordre, ou un seul long texte (jusqu'à 100 000 caractères) qu'Equalang découpe lui-même par phrases
+- **Plus de 100 langues** : plus de 100 pour le texte et 12 pour les fichiers, avec la langue source détectée quand vous l'omettez
 
 ## Obtenir une clé
 
@@ -96,15 +94,7 @@ Vous préférez un skill ? [equalang-skill](https://github.com/equalang/equalang
 | `get_credit_balance` | Les crédits du compte. |
 | `list_languages` | Codes et noms de langues, lus depuis l'API en direct. Ne nécessite pas de clé. |
 
-## Quatre choses à savoir
-
-**Langues.** Les codes ressemblent à `en`, `zh-CN`, `ja`. Aucune liste n'est intégrée à ce paquet : `list_languages` lit les codes et les noms depuis l'API en direct (moins nombreux pour les fichiers que pour le texte), de sorte qu'une langue ajoutée par Equalang est disponible sans mise à jour. Omettez la langue source pour qu'elle soit détectée.
-
-**Crédits.** Le travail consomme les crédits du compte, le même solde que sur le site web ; le serveur demande donc au modèle d'annoncer le coût et d'obtenir un accord d'abord, et le chiffre vient de `estimate_cost`.
-
-**Les tâches prennent des minutes.** Un outil attend sa tâche, mais pas au-delà de ce qu'un client accorde à un appel (50 s par défaut, `wait_seconds` jusqu'à 240). Ensuite, le modèle reçoit l'identifiant de la tâche et la consigne d'appeler `check_job`, qui enregistre les résultats là où ils doivent aller.
-
-**Limites.** Jusqu'à 100 MB par fichier ; `translate_text` accepte jusqu'à 50 textes de 5 000 caractères (20 000 par appel), ou un seul texte de 100 000 au plus.
+Les codes de langue ressemblent à `en`, `zh-CN`, `ja` ; `list_languages` les lit depuis l'API en direct, de sorte qu'une langue ajoutée par Equalang est disponible sans mise à jour. Une tâche prend des minutes : un outil attend jusqu'à `wait_seconds` (50 s par défaut, 240 au maximum), puis rend l'identifiant de la tâche pour `check_job`.
 
 ## Questions fréquentes
 
@@ -119,27 +109,6 @@ Oui. Le texte d'un JPG, PNG, WebP ou BMP est reconnu, traduit puis redessiné da
 
 **Combien coûte une tâche ?**
 `estimate_cost` le dit avant que quoi que ce soit ne démarre, et c'est gratuit. Les tarifs sont sur <https://equalang.com/pricing>.
-
-## Comment il est construit
-
-Trois décisions, chacune avec sa raison :
-
-1. **Un fichier ne passe jamais par le modèle.** MCP n'a pas de type fichier, et un PDF de 5 MB dans un résultat d'outil coûte une fortune en contexte pour ne rien dire. Un outil reçoit *où se trouve un fichier* (un chemin absolu sur cette machine, ou une URL `http(s)` publique) et répond par *où les résultats ont été écrits*. Une URL est transmise à Equalang, qui la récupère lui-même ; rien n'est téléchargé ici pour être aussitôt renvoyé.
-2. **Une tâche vit à l'intérieur d'un seul appel d'outil.** Renvoyer un identifiant de tâche et compter sur le modèle pour faire du polling, c'est une boucle qui s'abandonne à mi-chemin. L'outil attend – en marquant entre deux vérifications la pause que demande le `Retry-After` de l'API, et en signalant la progression au client qui l'a demandée – mais pas au-delà de ce qu'un client accorde à un appel (50 s par défaut, `wait_seconds` jusqu'à 240). Ensuite, le modèle reçoit l'identifiant et la consigne d'appeler `check_job` ; le serveur se souvient de l'endroit où vont les résultats de cette tâche.
-3. **Les réponses de l'API sont répétées, pas devinées.** Qu'un échec puisse être retenté, c'est le `retryable` de l'API qui le dit, pas une lecture des codes de statut. Ce qu'une tâche peut coûter, c'est le `quote` de l'API, pas un tarif recopié dans ce paquet. La liste des langues est lue dans le document OpenAPI de l'API. Une requête qui crée une tâche porte un seul `Idempotency-Key` à travers les nouvelles tentatives de ce client, de sorte qu'une réponse perdue ne peut pas devenir une seconde tâche facturée.
-
-Une réponse est donnée deux fois – en texte pour tous les clients et en `structuredContent` pour ceux qui le lisent – et chaque fichier écrit est aussi désigné par un `resource_link`, la façon dont MCP dit « voici un fichier » sans en transporter les octets. Ce qui vaut pour tous les outils (des chemins en entrée, des chemins en sortie, demander avant de dépenser) est dit une seule fois, dans les `instructions` du serveur. Les résultats n'écrasent jamais rien : un nom déjà pris reçoit ` (1)`. Les chemins relatifs sont refusés : ce processus ne partage pas le répertoire de travail de l'agent.
-
-## Développement
-
-```bash
-npm install && npm run build
-node selftest.mjs                                          # protocole, liste des outils, l'outil sans clé
-EQUALANG_API_KEY=el_... node selftest.mjs file.txt talk.mp3  # et de vraies tâches (consomme des crédits)
-node check-api.mjs                                         # chemins, champs et ce que promettent les descriptions des outils, face au contrat en direct de l'API
-```
-
-`EQUALANG_BASE_URL` fait pointer le serveur vers un autre déploiement.
 
 ## Liens
 

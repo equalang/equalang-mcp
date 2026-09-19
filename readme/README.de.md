@@ -22,10 +22,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - **Format rein, Format raus** – PDF, DOCX, PPTX, XLSX, EPUB, HTML und TXT kommen im selben Format zurück, weiterhin bearbeitbar, Tabellen, Bilder, Formeln und Seitenlayout an ihrem Platz
 - **Untertitel und Bilder** – SRT und VTT behalten ihr Timing, auf Wunsch mit der Originalzeile über der Übersetzung; JPG, PNG, WebP und BMP kommen mit übersetztem Text im Bild zurück
 - **Audio und Video** – aus MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM und MKV werden übersetzte Untertitel oder ein Transkript in der gesprochenen Sprache (SRT, VTT, TXT, JSON)
-- **Text in großen Mengen** – einzelne Strings, in ihrer Reihenfolge übersetzt, oder ein langer Text (bis zu 100.000 Zeichen), den Equalang selbst an Satzgrenzen teilt; über 100 Sprachen für Text, 12 für Dateien
-- **Ganze Dateien, kein Copy-and-paste** – bis zu 100 MB pro Datei, von einem Pfad oder einer öffentlichen URL; nichts, was man auf Textfelder aufteilen müsste
-- **Kostet keine Tokens** – der Agent übergibt einen Pfad oder eine URL und bekommt Pfade zurück; ein 300-seitiges PDF gelangt nie in die Unterhaltung
-- **Der Preis vor dem Auftrag** – `estimate_cost` nennt kostenlos den Höchstbetrag, den ein Auftrag kosten kann; fehlgeschlagene und abgebrochene Aufträge kosten nichts; eine Aufnahme wird nach der tatsächlich gehörten Sprache berechnet; Credits verfallen nie
+- **Text in großen Mengen** – einzelne Strings, in ihrer Reihenfolge übersetzt, oder ein langer Text (bis zu 100.000 Zeichen), den Equalang selbst an Satzgrenzen teilt
+- **Über 100 Sprachen** – über 100 für Text und 12 für Dateien, wobei die Quellsprache erkannt wird, wenn du sie weglässt
 
 ## Schlüssel holen
 
@@ -96,15 +94,7 @@ Lieber ein Skill? [equalang-skill](https://github.com/equalang/equalang-skill) b
 | `get_credit_balance` | Die Credits des Kontos. |
 | `list_languages` | Sprachcodes und -namen, aus der Live-API gelesen. Braucht keinen Schlüssel. |
 
-## Vier Dinge, die man wissen sollte
-
-**Sprachen.** Codes sehen aus wie `en`, `zh-CN`, `ja`. In dieses Paket ist keine Liste eingebaut: `list_languages` liest Codes und Namen aus der Live-API (für Dateien weniger als für Text), sodass eine Sprache, die Equalang hinzufügt, ohne Update verfügbar ist. Lass die Quellsprache weg, damit sie erkannt wird.
-
-**Credits.** Arbeit verbraucht die Credits des Kontos – dasselbe Guthaben wie auf der Website –, daher weist der Server das Modell an, zuerst die Kosten zu nennen und die Zustimmung einzuholen; die Zahl dafür liefert `estimate_cost`.
-
-**Aufträge dauern Minuten.** Ein Tool wartet auf seinen Auftrag, aber nicht länger, als ein Client einem Aufruf zugesteht (standardmäßig 50 s, `wait_seconds` bis 240). Danach bekommt das Modell die Auftrags-ID und die Anweisung, `check_job` aufzurufen, das die Ergebnisse dort speichert, wo sie hingehören.
-
-**Limits.** Bis zu 100 MB pro Datei; `translate_text` nimmt bis zu 50 Texte mit je 5.000 Zeichen (20.000 pro Aufruf) oder einen Text mit bis zu 100.000.
+Sprachcodes sehen aus wie `en`, `zh-CN`, `ja`; `list_languages` liest sie aus der Live-API, sodass eine Sprache, die Equalang hinzufügt, ohne Update verfügbar ist. Ein Auftrag dauert Minuten – ein Tool wartet bis zu `wait_seconds` (standardmäßig 50 s, höchstens 240) und gibt dann die Auftrags-ID für `check_job` zurück.
 
 ## Häufige Fragen
 
@@ -119,27 +109,6 @@ Ja. Text in einem JPG, PNG, WebP oder BMP wird erkannt, übersetzt und wieder in
 
 **Was kostet ein Auftrag?**
 Das sagt `estimate_cost`, bevor irgendetwas startet, und zwar kostenlos. Die Preise stehen unter <https://equalang.com/pricing>.
-
-## Wie er gebaut ist
-
-Drei Entscheidungen, jede mit einem Grund:
-
-1. **Eine Datei läuft nie durch das Modell.** MCP kennt keinen Dateityp, und ein 5-MB-PDF in einem Tool-Ergebnis kostet ein Vermögen an Kontext, ohne etwas zu sagen. Ein Tool nimmt entgegen, *wo eine Datei liegt* – ein absoluter Pfad auf diesem Rechner oder eine öffentliche `http(s)`-URL – und antwortet damit, *wohin die Ergebnisse geschrieben wurden*. Eine URL wird an Equalang weitergereicht, das sie selbst abruft; nichts wird hier heruntergeladen, nur um wieder hochgeladen zu werden.
-2. **Ein Auftrag lebt innerhalb eines Tool-Aufrufs.** Eine Auftrags-ID zurückzugeben und darauf zu vertrauen, dass das Modell pollt, ergibt eine Schleife, die auf halbem Weg aufgegeben wird. Das Tool wartet – es pausiert zwischen den Abfragen so lange, wie das `Retry-After` der API verlangt, und meldet den Fortschritt an einen Client, der darum gebeten hat – aber nicht länger, als ein Client einem Aufruf zugesteht (standardmäßig 50 s, `wait_seconds` bis 240). Danach bekommt das Modell die ID und die Anweisung, `check_job` aufzurufen; der Server merkt sich, wohin die Ergebnisse dieses Auftrags gehören.
-3. **Die Antworten der API werden wiedergegeben, nicht erraten.** Ob ein Fehler wiederholt werden kann, sagt das `retryable` der API, nicht eine Deutung von Statuscodes. Was ein Auftrag kosten kann, sagt das `quote` der API, nicht ein in dieses Paket kopierter Tarif. Die Sprachliste wird aus dem OpenAPI-Dokument der API gelesen. Eine Anfrage, die einen Auftrag anlegt, trägt über die eigenen Wiederholungen dieses Clients hinweg einen einzigen `Idempotency-Key`, sodass aus einer verlorenen Antwort kein zweiter, berechneter Auftrag werden kann.
-
-Eine Antwort wird zweimal gegeben – als Text für jeden Client und als `structuredContent` für die, die es lesen – und jede geschriebene Datei wird zusätzlich als `resource_link` genannt; so sagt MCP „hier ist eine Datei“, ohne ihre Bytes mitzuführen. Was für jedes Tool gilt (Pfade rein, Pfade raus, vor dem Ausgeben fragen), steht einmal in den `instructions` des Servers. Ergebnisse überschreiben nie: Ein vergebener Name bekommt ` (1)`. Relative Pfade werden abgelehnt – dieser Prozess teilt nicht das Arbeitsverzeichnis des Agenten.
-
-## Entwicklung
-
-```bash
-npm install && npm run build
-node selftest.mjs                                          # Protokoll, Tool-Liste, das Tool ohne Schlüssel
-EQUALANG_API_KEY=el_... node selftest.mjs file.txt talk.mp3  # und echte Aufträge (verbraucht Credits)
-node check-api.mjs                                         # Pfade, Felder und was die Tool-Beschreibungen versprechen, gegen den Live-Vertrag der API
-```
-
-`EQUALANG_BASE_URL` richtet den Server auf ein anderes Deployment aus.
 
 ## Links
 

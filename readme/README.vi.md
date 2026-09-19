@@ -22,10 +22,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - **Định dạng nào vào, định dạng ấy ra** - PDF, DOCX, PPTX, XLSX, EPUB, HTML và TXT trả về đúng định dạng cũ, vẫn chỉnh sửa được, bảng, hình ảnh, công thức và bố cục trang giữ nguyên
 - **Phụ đề và hình ảnh** - SRT và VTT giữ nguyên mốc thời gian, tùy chọn kèm dòng gốc phía trên bản dịch; JPG, PNG, WebP và BMP trả về với phần chữ trong ảnh đã được dịch
 - **Âm thanh và video** - MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM và MKV trở thành phụ đề đã dịch, hoặc bản chép lời bằng chính ngôn ngữ được nói (SRT, VTT, TXT, JSON)
-- **Văn bản hàng loạt** - các chuỗi riêng lẻ được dịch theo đúng thứ tự, hoặc một văn bản dài (tối đa 100,000 ký tự) do Equalang tự cắt theo câu; hơn 100 ngôn ngữ cho văn bản, 12 cho tệp
-- **Trọn tệp, không cần dán** - tối đa 100 MB mỗi tệp, từ một đường dẫn hoặc URL công khai; không phải chia nhỏ vào các ô văn bản
-- **Không tốn token** - agent truyền vào một đường dẫn hoặc URL và nhận lại các đường dẫn; một PDF 300 trang không bao giờ đi vào cuộc hội thoại
-- **Biết giá trước khi chạy** - `estimate_cost` cho biết mức tối đa một tác vụ có thể tốn, miễn phí; tác vụ thất bại hoặc bị hủy không mất gì; bản ghi âm được tính phí theo phần lời nói thực sự nghe được; credit không bao giờ hết hạn
+- **Văn bản hàng loạt** - các chuỗi riêng lẻ được dịch theo đúng thứ tự, hoặc một văn bản dài (tối đa 100,000 ký tự) do Equalang tự cắt theo câu
+- **Hơn 100 ngôn ngữ** - hơn 100 cho văn bản và 12 cho tệp, tự động phát hiện ngôn ngữ nguồn khi bạn bỏ trống
 
 ## Lấy khóa
 
@@ -96,15 +94,7 @@ Thích dùng skill hơn? [equalang-skill](https://github.com/equalang/equalang-s
 | `get_credit_balance` | Số credit của tài khoản. |
 | `list_languages` | Mã và tên ngôn ngữ, đọc từ API đang chạy. Không cần khóa. |
 
-## Bốn điều nên biết
-
-**Ngôn ngữ.** Mã có dạng `en`, `zh-CN`, `ja`. Gói này không kèm sẵn danh sách nào: `list_languages` đọc mã và tên từ API đang chạy (tệp hỗ trợ ít ngôn ngữ hơn văn bản), nên ngôn ngữ Equalang mới thêm dùng được ngay mà không cần cập nhật. Bỏ trống ngôn ngữ nguồn để tự động phát hiện.
-
-**Credit.** Công việc tiêu credit của tài khoản - cùng số dư với trang web - nên máy chủ yêu cầu mô hình nêu chi phí và được đồng ý trước; con số ấy lấy từ `estimate_cost`.
-
-**Tác vụ mất vài phút.** Công cụ chờ tác vụ của mình, nhưng không quá thời gian client cho phép một lần gọi (mặc định 50 s, `wait_seconds` tối đa 240). Sau đó mô hình nhận id tác vụ và được bảo gọi `check_job`, công cụ này sẽ lưu kết quả vào đúng chỗ.
-
-**Giới hạn.** Tối đa 100 MB mỗi tệp; `translate_text` nhận tối đa 50 đoạn văn bản, mỗi đoạn 5,000 ký tự (mỗi lần gọi 20,000), hoặc một văn bản tối đa 100,000.
+Mã ngôn ngữ có dạng `en`, `zh-CN`, `ja`; `list_languages` đọc chúng từ API đang chạy, nên ngôn ngữ Equalang mới thêm dùng được ngay mà không cần cập nhật ở đây. Tác vụ mất vài phút - công cụ chờ tối đa `wait_seconds` (mặc định 50 s, tối đa 240), rồi trả lại id tác vụ cho `check_job`.
 
 ## Câu hỏi thường gặp
 
@@ -119,27 +109,6 @@ Có. Chữ trong JPG, PNG, WebP hoặc BMP được nhận dạng, dịch và v�
 
 **Một tác vụ tốn bao nhiêu?**
 `estimate_cost` cho biết trước khi bất cứ thứ gì bắt đầu, và hoàn toàn miễn phí. Bảng giá có tại <https://equalang.com/pricing>.
-
-## Cách nó được xây dựng
-
-Ba quyết định, mỗi quyết định có một lý do:
-
-1. **Tệp không bao giờ đi qua mô hình.** MCP không có kiểu tệp, và một PDF 5 MB trong kết quả công cụ ngốn cả đống ngữ cảnh mà chẳng nói được gì. Công cụ nhận *tệp nằm ở đâu* - một đường dẫn tuyệt đối trên máy này, hoặc một URL `http(s)` công khai - và trả lời bằng *kết quả được ghi ở đâu*. URL được chuyển cho Equalang để nó tự tải; không có gì được tải về đây chỉ để rồi tải lên lại.
-2. **Một tác vụ nằm gọn trong một lần gọi công cụ.** Trả về id tác vụ rồi trông chờ mô hình tự thăm dò là một vòng lặp hay bị bỏ dở giữa chừng. Công cụ sẽ chờ - nghỉ giữa các lần kiểm tra đúng bằng thời gian `Retry-After` của API yêu cầu, và báo tiến độ cho client nào có yêu cầu - nhưng không quá thời gian client cho phép một lần gọi (mặc định 50 s, `wait_seconds` tối đa 240). Sau đó mô hình nhận id và được bảo gọi `check_job`; máy chủ nhớ kết quả của tác vụ đó phải đặt ở đâu.
-3. **Câu trả lời của API được thuật lại, không phải đoán.** Một lỗi có thử lại được hay không là do `retryable` của API, không phải do suy diễn từ mã trạng thái. Một tác vụ có thể tốn bao nhiêu là `quote` của API, không phải một mức giá chép vào gói này. Danh sách ngôn ngữ được đọc từ tài liệu OpenAPI của API. Yêu cầu tạo tác vụ mang cùng một `Idempotency-Key` qua các lần thử lại của chính client này, nên một câu trả lời bị mất không thể biến thành tác vụ thứ hai bị tính phí.
-
-Mỗi câu trả lời được nói hai lần - dạng văn bản cho mọi client và dạng `structuredContent` cho những client đọc được nó - và mỗi tệp được ghi ra còn được nêu dưới dạng `resource_link`, cách MCP nói "đây là một tệp" mà không mang theo byte của nó. Điều đúng với mọi công cụ (đường dẫn vào, đường dẫn ra, hỏi trước khi tiêu) được nói một lần, trong `instructions` của máy chủ. Kết quả không bao giờ ghi đè: tên đã có sẽ được thêm ` (1)`. Đường dẫn tương đối bị từ chối - tiến trình này không dùng chung thư mục làm việc với agent.
-
-## Phát triển
-
-```bash
-npm install && npm run build
-node selftest.mjs                                          # giao thức, danh sách công cụ, công cụ không cần khóa
-EQUALANG_API_KEY=el_... node selftest.mjs file.txt talk.mp3  # thêm các tác vụ thật (tiêu credit)
-node check-api.mjs                                         # đường dẫn, trường, và những gì mô tả công cụ cam kết, đối chiếu với hợp đồng API đang chạy
-```
-
-`EQUALANG_BASE_URL` trỏ máy chủ sang một bản triển khai khác.
 
 ## Liên kết
 

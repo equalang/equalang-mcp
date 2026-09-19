@@ -22,10 +22,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - **O formato que entra é o que sai**: PDF, DOCX, PPTX, XLSX, EPUB, HTML e TXT voltam no mesmo formato, ainda editáveis, com tabelas, imagens, fórmulas e layout de página no lugar
 - **Legendas e imagens**: SRT e VTT mantêm a sincronização, opcionalmente com a linha original acima da tradução; JPG, PNG, WebP e BMP voltam com o texto da imagem traduzido
 - **Áudio e vídeo**: MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM e MKV viram legendas traduzidas ou uma transcrição no idioma falado (SRT, VTT, TXT, JSON)
-- **Texto em lote**: strings separadas traduzidas em ordem, ou um único texto longo (até 100.000 caracteres) que o próprio Equalang corta por frases; mais de 100 idiomas para texto, 12 para arquivos
-- **Arquivos inteiros, sem copiar e colar**: até 100 MB por arquivo, a partir de um caminho ou de uma URL pública; nada para dividir em caixas de texto
-- **Não gasta tokens**: o agente passa um caminho ou uma URL e recebe caminhos de volta; um PDF de 300 páginas nunca entra na conversa
-- **O preço antes do job**: `estimate_cost` responde, de graça, com o máximo que um job pode custar; jobs com falha ou cancelados não custam nada; uma gravação é cobrada pela fala efetivamente ouvida; os créditos nunca expiram
+- **Texto em lote**: strings separadas traduzidas em ordem, ou um único texto longo (até 100.000 caracteres) que o próprio Equalang corta por frases
+- **Mais de 100 idiomas**: mais de 100 para texto e 12 para arquivos, com o idioma de origem detectado quando você o omite
 
 ## Obtenha uma chave
 
@@ -96,15 +94,7 @@ Prefere uma skill? O [equalang-skill](https://github.com/equalang/equalang-skill
 | `get_credit_balance` | Os créditos da conta. |
 | `list_languages` | Códigos e nomes de idiomas, lidos da API em produção. Não precisa de chave. |
 
-## Quatro coisas que vale a pena saber
-
-**Idiomas.** Os códigos têm o formato `en`, `zh-CN`, `ja`. Não há lista embutida neste pacote: `list_languages` lê os códigos e nomes da API em produção (menos para arquivos do que para texto), então um idioma que o Equalang adicionar fica disponível sem atualização. Omita o idioma de origem para que ele seja detectado.
-
-**Créditos.** O trabalho consome os créditos da conta, o mesmo saldo do site, por isso o servidor instrui o modelo a informar o custo e obter a concordância antes; o número vem de `estimate_cost`.
-
-**Jobs levam minutos.** Uma ferramenta espera pelo seu job, mas não além do que o cliente permite a uma chamada (50 s por padrão, `wait_seconds` até 240). Depois disso, o modelo recebe o id do job e a orientação de chamar `check_job`, que salva os resultados onde eles devem ficar.
-
-**Limites.** Até 100 MB por arquivo; `translate_text` aceita até 50 textos de 5.000 caracteres (20.000 por chamada), ou um único texto de até 100.000.
+Os códigos de idioma têm o formato `en`, `zh-CN`, `ja`; `list_languages` os lê da API em produção, então um idioma que o Equalang adicionar fica disponível sem atualização. Um job leva minutos: uma ferramenta espera até `wait_seconds` (50 s por padrão, 240 no máximo) e então devolve o id do job para `check_job`.
 
 ## Perguntas frequentes
 
@@ -119,27 +109,6 @@ Sim. O texto de um JPG, PNG, WebP ou BMP é reconhecido, traduzido e redesenhado
 
 **Quanto custa um job?**
 `estimate_cost` informa antes de qualquer coisa começar, e é gratuito. Os preços estão em <https://equalang.com/pricing>.
-
-## Como foi construído
-
-Três decisões, cada uma com seu motivo:
-
-1. **Um arquivo nunca passa pelo modelo.** O MCP não tem tipo de arquivo, e um PDF de 5 MB no resultado de uma ferramenta custa uma fortuna em contexto para não dizer nada. Uma ferramenta recebe *onde o arquivo está* (um caminho absoluto nesta máquina ou uma URL `http(s)` pública) e responde com *onde os resultados foram gravados*. Uma URL é entregue ao Equalang, que a busca por conta própria; nada é baixado aqui só para ser enviado de novo.
-2. **Um job vive dentro de uma única chamada de ferramenta.** Devolver um id de job e confiar que o modelo fará polling é um loop que acaba abandonado no meio do caminho. A ferramenta espera, pausando entre as consultas pelo tempo que o `Retry-After` da API pedir e reportando o progresso ao cliente que o solicitou, mas não além do que o cliente permite a uma chamada (50 s por padrão, `wait_seconds` até 240). Depois disso, o modelo recebe o id e a orientação de chamar `check_job`; o servidor lembra onde os resultados daquele job devem ficar.
-3. **As respostas da API são repetidas, não adivinhadas.** Se uma falha pode ser tentada de novo é o `retryable` da API, não uma interpretação de códigos de status. Quanto um job pode custar é o `quote` da API, não uma tarifa copiada para este pacote. A lista de idiomas é lida do documento OpenAPI da API. Uma requisição que cria um job leva uma única `Idempotency-Key` em todas as novas tentativas deste cliente, de modo que uma resposta perdida não vira um segundo job cobrado.
-
-Uma resposta é dita duas vezes, como texto para todos os clientes e como `structuredContent` para os que o leem, e cada arquivo gravado também é indicado como um `resource_link`, que é como o MCP diz "aqui está um arquivo" sem carregar seus bytes. O que vale para todas as ferramentas (caminhos na entrada, caminhos na saída, perguntar antes de gastar) é dito uma vez só, nas `instructions` do servidor. Os resultados nunca sobrescrevem: um nome já usado recebe ` (1)`. Caminhos relativos são recusados: este processo não compartilha o diretório de trabalho do agente.
-
-## Desenvolvimento
-
-```bash
-npm install && npm run build
-node selftest.mjs                                          # protocolo, lista de ferramentas, a ferramenta sem chave
-EQUALANG_API_KEY=el_... node selftest.mjs file.txt talk.mp3  # e jobs reais (consome créditos)
-node check-api.mjs                                         # caminhos, campos e o que as descrições das ferramentas prometem, contra o contrato atual da API
-```
-
-`EQUALANG_BASE_URL` aponta o servidor para outra implantação.
 
 ## Links
 

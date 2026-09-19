@@ -22,10 +22,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - **Hangi biçimde girdiyse o biçimde çıkar** – PDF, DOCX, PPTX, XLSX, EPUB, HTML ve TXT aynı biçimde, düzenlenebilir halde geri gelir; tablolar, görseller, formüller ve sayfa düzeni yerinde kalır
 - **Altyazılar ve resimler** – SRT ve VTT zamanlamasını korur, istenirse kaynak satır çevirinin üstünde yer alır; JPG, PNG, WebP ve BMP, resmin içindeki metin çevrilmiş olarak geri gelir
 - **Ses ve video** – MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM ve MKV çevrilmiş altyazıya ya da konuşulan dilde bir döküme dönüşür (SRT, VTT, TXT, JSON)
-- **Toplu metin** – ayrı dizeler sırasıyla çevrilir ya da Equalang'ın cümle sınırlarından kendisinin böldüğü tek bir uzun metin (100.000 karaktere kadar); metin için 100+, dosyalar için 12 dil
-- **Bütün dosyalar, kopyala-yapıştır yok** – dosya başına en fazla 100 MB, bir yoldan ya da herkese açık bir URL'den; metin kutularına bölüp yapıştıracak bir şey yok
-- **Token harcamaz** – ajan bir yol ya da URL verir, karşılığında yollar alır; 300 sayfalık bir PDF konuşmaya hiç girmez
-- **İşten önce fiyat** – `estimate_cost`, bir işin en fazla kaça mal olabileceğini ücretsiz söyler; başarısız olan ve iptal edilen işler ücretlendirilmez; bir kayıt, gerçekten duyulan konuşma kadar ücretlendirilir; kredilerin süresi dolmaz
+- **Toplu metin** – ayrı dizeler sırasıyla çevrilir ya da Equalang'ın cümle sınırlarından kendisinin böldüğü tek bir uzun metin (100.000 karaktere kadar)
+- **100+ dil** – metin için 100+, dosyalar için 12; kaynak dili boş bıraktığınızda otomatik olarak algılanır
 
 ## Anahtar alın
 
@@ -96,15 +94,7 @@ Beceri mi tercih edersiniz? [equalang-skill](https://github.com/equalang/equalan
 | `get_credit_balance` | Hesabın kredileri. |
 | `list_languages` | Canlı API'den okunan dil kodları ve adları. Anahtar gerektirmez. |
 
-## Bilmeye değer dört şey
-
-**Diller.** Kodlar `en`, `zh-CN`, `ja` biçimindedir. Bu pakete gömülü bir liste yoktur: `list_languages` kodları ve adları canlı API'den okur (dosyalar için metne göre daha az dil vardır), böylece Equalang'ın eklediği bir dil güncelleme gerekmeden kullanılabilir. Kaynak dilin algılanması için onu boş bırakın.
-
-**Krediler.** İşler hesabın kredilerini harcar – web sitesindekiyle aynı bakiye – bu yüzden sunucu modele önce maliyeti söylemesini ve onay almasını bildirir; rakam `estimate_cost` aracından gelir.
-
-**İşler dakikalar sürer.** Araç kendi işini bekler, ama istemcinin bir çağrıya tanıdığı süreyi aşmaz (varsayılan 50 sn, `wait_seconds` en fazla 240). Sonrasında model iş kimliğini alır ve sonuçları ait oldukları yere kaydeden `check_job` aracını çağırması söylenir.
-
-**Sınırlar.** Dosya başına en fazla 100 MB; `translate_text` her biri 5.000 karakterlik en fazla 50 metin (çağrı başına 20.000) ya da 100.000 karaktere kadar tek bir metin alır.
+Dil kodları `en`, `zh-CN`, `ja` biçimindedir; `list_languages` bunları canlı API'den okur, böylece Equalang'ın eklediği bir dil güncelleme gerekmeden kullanılabilir. İşler dakikalar sürer – bir araç en çok `wait_seconds` kadar bekler (varsayılan 50 sn, en fazla 240), sonra `check_job` için iş kimliğini geri verir.
 
 ## Sık sorulan sorular
 
@@ -119,27 +109,6 @@ Evet. JPG, PNG, WebP ya da BMP içindeki metin tanınır, çevrilir ve resme yen
 
 **Bir iş kaça mal olur?**
 `estimate_cost` bunu hiçbir şey başlamadan önce söyler ve ücretsizdir. Fiyatlar <https://equalang.com/pricing> adresindedir.
-
-## Nasıl tasarlandı
-
-Üç karar, her birinin bir gerekçesi var:
-
-1. **Dosya asla modelin içinden geçmez.** MCP'de dosya türü yoktur ve bir araç sonucundaki 5 MB'lık bir PDF, hiçbir şey söylemeden bağlamda bir servete mal olur. Araç, *dosyanın nerede olduğunu* alır – bu makinedeki mutlak bir yol ya da herkese açık bir `http(s)` URL'si – ve *sonuçların nereye yazıldığını* bildirir. URL Equalang'a verilir, o da dosyayı kendisi çeker; hiçbir şey sırf yeniden yüklenmek üzere buraya indirilmez.
-2. **Bir iş tek bir araç çağrısının içinde yaşar.** Bir iş kimliği döndürüp modelin yoklama yapacağına güvenmek, yarı yolda bırakılan bir döngüdür. Araç bekler – bakışlar arasında API'nin `Retry-After` değerinin istediği kadar durarak ve ilerleme isteyen istemciye ilerlemeyi bildirerek – ama istemcinin bir çağrıya tanıdığı süreyi aşmaz (varsayılan 50 sn, `wait_seconds` en fazla 240). Sonrasında model kimliği alır ve `check_job` aracını çağırması söylenir; sunucu o işin sonuçlarının nereye ait olduğunu hatırlar.
-3. **API'nin yanıtları tahmin edilmez, aktarılır.** Bir hatanın yeniden denenip denenemeyeceğini durum kodlarının yorumu değil, API'nin `retryable` alanı belirler. Bir işin kaça mal olabileceği bu pakete kopyalanmış bir tarife değil, API'nin `quote` değeridir. Dil listesi API'nin OpenAPI belgesinden okunur. İş oluşturan bir istek, bu istemcinin kendi yeniden denemeleri boyunca tek bir `Idempotency-Key` taşır; böylece kaybolan bir yanıt ikinci, ücretlendirilmiş bir işe dönüşemez.
-
-Bir yanıt iki kez söylenir – her istemci için metin olarak ve onu okuyanlar için `structuredContent` olarak – ve yazılan her dosya ayrıca bir `resource_link` olarak belirtilir; MCP, baytlarını taşımadan "işte bir dosya" demeyi böyle yapar. Her araç için geçerli olan şey (yollar girer, yollar çıkar, harcamadan önce sor) bir kez, sunucunun `instructions` alanında söylenir. Sonuçlar asla üzerine yazmaz: alınmış bir ada ` (1)` eklenir. Göreli yollar reddedilir – bu süreç ajanın çalışma dizinini paylaşmaz.
-
-## Geliştirme
-
-```bash
-npm install && npm run build
-node selftest.mjs                                          # protokol, araç listesi, anahtarsız araç
-EQUALANG_API_KEY=el_... node selftest.mjs file.txt talk.mp3  # ve gerçek işler (kredi harcar)
-node check-api.mjs                                         # yollar, alanlar ve araç açıklamalarının vaat ettikleri, API'nin canlı sözleşmesine karşı
-```
-
-`EQUALANG_BASE_URL` sunucuyu başka bir dağıtıma yönlendirir.
 
 ## Bağlantılar
 
