@@ -1,0 +1,70 @@
+{
+  "name": "@equalang/mcp",
+  "version": "0.1.0",
+  "mcpName": "io.github.equalang/equalang-mcp",
+  "description": "MCP server for Equalang: translate documents, slides, spreadsheets, e-books, subtitles, pictures, audio and video with their layout kept, transcribe recordings, and translate text.",
+  "type": "module",
+  "bin": {
+    "equalang-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "check:api": "node check-api.mjs",
+    "selftest": "node selftest.mjs",
+    "prepare": "tsup",
+    "prepublishOnly": "npm run build && node check-api.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "claude",
+    "claude-code",
+    "codex",
+    "cursor",
+    "translation",
+    "document-translation",
+    "pdf-translation",
+    "subtitle-translation",
+    "transcription",
+    "speech-to-text",
+    "docx",
+    "pptx",
+    "xlsx",
+    "epub",
+    "srt",
+    "equalang"
+  ],
+  "author": "Equalang",
+  "license": "Apache-2.0",
+  "homepage": "https://equalang.com/developers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/equalang/equalang-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/equalang/equalang-mcp/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2"
+  }
+}

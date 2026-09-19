@@ -1,0 +1,17 @@
+# The key is supplied once on the web and never appears in a URL.
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required: [EQUALANG_API_KEY]
+    properties:
+      EQUALANG_API_KEY:
+        type: string
+        title: Equalang API key
+        description: "Create one at https://equalang.com/api-keys"
+  commandFunction:
+    - npx
+    - -y
+    - "@equalang/mcp"
+  env:
+    EQUALANG_API_KEY: "{{config.EQUALANG_API_KEY}}"

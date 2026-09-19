@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "equalang": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@equalang/mcp"],
+      "env": { "EQUALANG_API_KEY": "el_your_key" }
+    }
+  }
+}
