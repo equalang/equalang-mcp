@@ -51,8 +51,10 @@ const promised = [...new Set([...prose.matchAll(/\((?:[a-z0-9]+, )+[a-z0-9]+\)/g
 check(`every format the descriptions name is accepted (${promised.length})`, promised.length > 20 && promised.every((ext) => accepted.includes(ext)), promised.filter((ext) => !accepted.includes(ext)).join(','));
 check('every format the API accepts is named in a description', accepted.every((ext) => promised.includes(ext) || ext === 'jpeg'), accepted.filter((ext) => !promised.includes(ext)).join(','));
 const texts = schemas.PublicTextTranslateRequest.properties.texts;
+const whole = schemas.PublicTextTranslateRequest.properties.text;
 check('translate_text states the limits the API enforces',
-  tools.includes(`max(${texts.maxItems})`) && tools.includes(`At most ${texts.maxItems} texts of ${texts.items.maxLength.toLocaleString('en')} characters, ${texts['x-max-total-characters'].toLocaleString('en')} characters per call`));
+  tools.includes(`max(${texts.maxItems})`) && tools.includes(`at most ${texts.maxItems} texts of ${texts.items.maxLength.toLocaleString('en')} characters, ${texts['x-max-total-characters'].toLocaleString('en')} characters per call`)
+  && tools.includes(`max(${whole?.maxLength})`) && tools.includes(`up to ${whole?.maxLength.toLocaleString('en')} characters`));
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 const registry = JSON.parse(readFileSync(new URL('./server.json', import.meta.url), 'utf8'));
 check('server.json names the version package.json does', registry.version === pkg.version && registry.packages.every((p) => p.version === pkg.version && p.identifier === pkg.name));

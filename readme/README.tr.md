@@ -37,7 +37,7 @@ Node 18 veya üzeri gerekir. Anahtar olmadan da sunucu başlar ve araçlarını 
 | --- | --- |
 | `translate_file` | Bir dosyayı (yol ya da herkese açık URL) başka bir dile çevirir ve sonucu dosyanın yanına kaydeder. |
 | `transcribe_recording` | Bir ses ya da video dosyasında söylenenleri zaman damgalı metin olarak yazar (SRT, VTT, TXT, JSON). |
-| `translate_text` | En fazla 50 kısa düz metni sırasıyla çevirir. |
+| `translate_text` | Ayrı dizeleri sırasıyla çevirir - ya da Equalang'ın cümle sınırlarından kendisinin böldüğü tek bir uzun metni. |
 | `estimate_cost` | Hiçbir şey başlatmadan dosyayı yükler; o dosyadaki bir işin en fazla kaça mal olabileceğini ve işi ikinci bir yükleme olmadan başlatan bir `file_id` döndürür. Ücretsizdir. |
 | `check_job` | Bir işi kaldığı yerden yeniden ele alır ve iş bittiğinde sonuçlarını kaydeder. |
 | `cancel_job` | Kuyruktaki ya da çalışan bir işi durdurur. İptal edilen iş ücretlendirilmez. |
@@ -48,7 +48,7 @@ Node 18 veya üzeri gerekir. Anahtar olmadan da sunucu başlar ve araçlarını 
 
 **Diller.** Kodlar `en`, `zh-CN`, `ja` biçimindedir. Bu pakete gömülü bir liste yoktur: `list_languages` kodları ve adları canlı API'den okur (dosyalar için metne göre daha az dil vardır), böylece Equalang'ın eklediği bir dil güncelleme gerekmeden kullanılabilir. Kaynak dilin algılanması için onu boş bırakın.
 
-**Biçimler ve sınırlar.** Yukarıdaki biçimler, dosya başına en fazla 100 MB; `translate_text` her biri 5,000 karakterlik en fazla 50 metin, çağrı başına 20,000 karakter alır.
+**Biçimler ve sınırlar.** Yukarıdaki biçimler, dosya başına en fazla 100 MB; `translate_text` her biri 5,000 karakterlik en fazla 50 metin (çağrı başına 20,000) ya da 100,000 karaktere kadar tek bir metin alır.
 
 ## Nasıl tasarlandı
 

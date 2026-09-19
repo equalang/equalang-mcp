@@ -37,7 +37,7 @@ Nécessite Node 18 ou plus récent. Sans clé, le serveur démarre quand même e
 | --- | --- |
 | `translate_file` | Traduit un fichier (chemin ou URL publique) dans une autre langue et enregistre le résultat à côté. |
 | `transcribe_recording` | Met par écrit ce que dit un fichier audio ou vidéo, sous forme de texte horodaté (SRT, VTT, TXT, JSON). |
-| `translate_text` | Traduit jusqu'à 50 courts textes bruts, dans l'ordre. |
+| `translate_text` | Traduit des chaînes séparées, dans l'ordre - ou un seul long texte, qu'Equalang découpe lui-même par phrases. |
 | `estimate_cost` | Envoie un fichier sans rien lancer ; répond avec le coût maximal d'une tâche sur ce fichier, et un `file_id` qui lance la tâche sans second envoi. Gratuit. |
 | `check_job` | Reprend une tâche et enregistre ses résultats une fois qu'elle est terminée. |
 | `cancel_job` | Arrête une tâche en file d'attente ou en cours. Une tâche annulée n'est pas facturée. |
@@ -48,7 +48,7 @@ Nécessite Node 18 ou plus récent. Sans clé, le serveur démarre quand même e
 
 **Langues.** Les codes ressemblent à `en`, `zh-CN`, `ja`. Aucune liste n'est intégrée à ce paquet : `list_languages` lit les codes et les noms depuis l'API en direct (moins nombreux pour les fichiers que pour le texte), de sorte qu'une langue ajoutée par Equalang est disponible sans mise à jour. Omettez la langue source pour qu'elle soit détectée.
 
-**Formats et limites.** Les formats ci-dessus, jusqu'à 100 MB par fichier ; `translate_text` accepte jusqu'à 50 textes de 5,000 caractères, 20,000 caractères par appel.
+**Formats et limites.** Les formats ci-dessus, jusqu'à 100 MB par fichier ; `translate_text` accepte jusqu'à 50 textes de 5,000 caractères (20,000 par appel), ou un seul texte de 100,000 au plus.
 
 ## Comment il est construit
 

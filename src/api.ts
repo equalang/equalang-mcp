@@ -227,8 +227,9 @@ export class Equalang {
     return (await this.request<Job>('POST', `/jobs/${encodeURIComponent(jobId)}/cancel`)).data;
   }
 
-  async translateText(texts: string[], targetLanguage: string, sourceLanguage?: string) {
-    const json = JSON.stringify({ texts, target_language: targetLanguage, source_language: sourceLanguage });
+  /** Separate strings, each on its own -- or one whole text, which the API cuts at sentences itself. */
+  async translateText(input: { texts: string[] } | { text: string }, targetLanguage: string, sourceLanguage?: string) {
+    const json = JSON.stringify({ ...input, target_language: targetLanguage, source_language: sourceLanguage });
     type Answer = {
       translations: Array<{ translated_text: string | null; detected_source_language: string | null;
         error: { code: string; message: string; retryable: boolean } | null }>;

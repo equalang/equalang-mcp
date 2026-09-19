@@ -37,7 +37,7 @@ Benötigt Node 18 oder neuer. Ohne Schlüssel startet der Server trotzdem und li
 | --- | --- |
 | `translate_file` | Übersetzt eine Datei (Pfad oder öffentliche URL) in eine andere Sprache und speichert das Ergebnis daneben. |
 | `transcribe_recording` | Schreibt auf, was in einer Audio- oder Videodatei gesagt wird, als Text mit Zeitmarken (SRT, VTT, TXT, JSON). |
-| `translate_text` | Übersetzt bis zu 50 kurze Klartexte, in ihrer Reihenfolge. |
+| `translate_text` | Übersetzt einzelne Strings, in ihrer Reihenfolge - oder einen langen Text, den Equalang selbst an Satzgrenzen teilt. |
 | `estimate_cost` | Lädt eine Datei hoch, ohne etwas zu starten; antwortet mit dem Höchstbetrag, den ein Auftrag damit kosten kann, und einer `file_id`, die den Auftrag ohne zweiten Upload startet. Kostenlos. |
 | `check_job` | Nimmt einen Auftrag wieder auf und speichert seine Ergebnisse, sobald er fertig ist. |
 | `cancel_job` | Stoppt einen wartenden oder laufenden Auftrag. Ein abgebrochener Auftrag wird nicht berechnet. |
@@ -48,7 +48,7 @@ Benötigt Node 18 oder neuer. Ohne Schlüssel startet der Server trotzdem und li
 
 **Sprachen.** Codes sehen aus wie `en`, `zh-CN`, `ja`. In dieses Paket ist keine Liste eingebaut: `list_languages` liest Codes und Namen aus der Live-API (für Dateien weniger als für Text), sodass eine Sprache, die Equalang hinzufügt, ohne Update verfügbar ist. Lass die Quellsprache weg, damit sie erkannt wird.
 
-**Formate und Limits.** Die oben genannten Formate, bis zu 100 MB pro Datei; `translate_text` nimmt bis zu 50 Texte mit je 5,000 Zeichen, 20,000 Zeichen pro Aufruf.
+**Formate und Limits.** Die oben genannten Formate, bis zu 100 MB pro Datei; `translate_text` nimmt bis zu 50 Texte mit je 5,000 Zeichen (20,000 pro Aufruf) oder einen Text mit bis zu 100,000.
 
 ## Wie er gebaut ist
 

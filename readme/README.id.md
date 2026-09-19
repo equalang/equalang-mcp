@@ -37,7 +37,7 @@ Membutuhkan Node 18 atau lebih baru. Tanpa kunci, server tetap berjalan dan mena
 | --- | --- |
 | `translate_file` | Menerjemahkan file (path atau URL publik) ke bahasa lain dan menyimpan hasilnya di samping file asli. |
 | `transcribe_recording` | Menuliskan apa yang diucapkan dalam file audio atau video sebagai teks berpenanda waktu (SRT, VTT, TXT, JSON). |
-| `translate_text` | Menerjemahkan hingga 50 teks polos pendek, sesuai urutan. |
+| `translate_text` | Menerjemahkan string-string terpisah, sesuai urutan - atau satu teks panjang, yang dipotong sendiri oleh Equalang per kalimat. |
 | `estimate_cost` | Mengunggah file tanpa memulai apa pun; menjawab dengan biaya maksimum sebuah job atas file itu, serta `file_id` yang memulai job tanpa unggahan kedua. Gratis. |
 | `check_job` | Melanjutkan pemantauan job, dan menyimpan hasilnya setelah selesai. |
 | `cancel_job` | Menghentikan job yang sedang antre atau berjalan. Job yang dibatalkan tidak dikenai biaya. |
@@ -48,7 +48,7 @@ Membutuhkan Node 18 atau lebih baru. Tanpa kunci, server tetap berjalan dan mena
 
 **Bahasa.** Kode berbentuk seperti `en`, `zh-CN`, `ja`. Tidak ada daftar yang ditanam dalam paket ini: `list_languages` membaca kode dan nama dari API secara langsung (untuk file lebih sedikit daripada untuk teks), sehingga bahasa yang ditambahkan Equalang langsung tersedia tanpa pembaruan. Kosongkan bahasa sumber agar terdeteksi otomatis.
 
-**Format dan batas.** Format-format di atas, hingga 100 MB per file; `translate_text` menerima hingga 50 teks masing-masing 5,000 karakter, 20,000 karakter per panggilan.
+**Format dan batas.** Format-format di atas, hingga 100 MB per file; `translate_text` menerima hingga 50 teks masing-masing 5,000 karakter (20,000 per panggilan), atau satu teks hingga 100,000.
 
 ## Cara pembuatannya
 

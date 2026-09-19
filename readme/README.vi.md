@@ -37,7 +37,7 @@ Cần Node 18 trở lên. Không có khóa, máy chủ vẫn khởi động và 
 | --- | --- |
 | `translate_file` | Dịch một tệp (đường dẫn hoặc URL công khai) sang ngôn ngữ khác và lưu kết quả ngay cạnh tệp gốc. |
 | `transcribe_recording` | Chép lại lời nói trong tệp âm thanh hoặc video thành văn bản có mốc thời gian (SRT, VTT, TXT, JSON). |
-| `translate_text` | Dịch tối đa 50 đoạn văn bản thuần ngắn, theo đúng thứ tự. |
+| `translate_text` | Dịch các chuỗi riêng lẻ, theo đúng thứ tự - hoặc một văn bản dài, do Equalang tự cắt theo câu. |
 | `estimate_cost` | Tải tệp lên mà không khởi chạy gì; trả về chi phí tối đa của một tác vụ trên tệp đó, kèm một `file_id` để khởi chạy tác vụ mà không phải tải lên lần nữa. Miễn phí. |
 | `check_job` | Tiếp tục theo dõi một tác vụ, và lưu kết quả khi nó hoàn tất. |
 | `cancel_job` | Dừng một tác vụ đang chờ hoặc đang chạy. Tác vụ đã hủy không bị tính phí. |
@@ -48,7 +48,7 @@ Cần Node 18 trở lên. Không có khóa, máy chủ vẫn khởi động và 
 
 **Ngôn ngữ.** Mã có dạng `en`, `zh-CN`, `ja`. Gói này không kèm sẵn danh sách nào: `list_languages` đọc mã và tên từ API đang chạy (tệp hỗ trợ ít ngôn ngữ hơn văn bản), nên ngôn ngữ Equalang mới thêm dùng được ngay mà không cần cập nhật. Bỏ trống ngôn ngữ nguồn để tự động phát hiện.
 
-**Định dạng và giới hạn.** Các định dạng nêu trên, tối đa 100 MB mỗi tệp; `translate_text` nhận tối đa 50 đoạn văn bản, mỗi đoạn 5,000 ký tự, mỗi lần gọi 20,000 ký tự.
+**Định dạng và giới hạn.** Các định dạng nêu trên, tối đa 100 MB mỗi tệp; `translate_text` nhận tối đa 50 đoạn văn bản, mỗi đoạn 5,000 ký tự (mỗi lần gọi 20,000), hoặc một văn bản tối đa 100,000.
 
 ## Cách nó được xây dựng
 

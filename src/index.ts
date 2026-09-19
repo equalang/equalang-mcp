@@ -261,17 +261,20 @@ server.registerTool('translate_text', {
   // Changes nothing on this machine, but spends credits: not read-only.
   annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
   description:
-    'Translate short plain texts and answer with the translations, in order. For strings in hand -- labels, messages, a paragraph; ' +
-    'for anything that is a file, use translate_file, which keeps its formatting. At most 50 texts of 5,000 characters, 20,000 characters per call. ' +
-    'Charged by length, a small amount; the answer says how much.',
+    'Translate plain text and answer with the translation. Pass texts for separate strings -- labels, messages: each translated on its own, ' +
+    'answered in order, at most 50 texts of 5,000 characters, 20,000 characters per call. Pass text for one long text -- an article, a chapter, ' +
+    'up to 100,000 characters: it is cut at sentences by Equalang, so do not split it yourself. For anything that is a file, use translate_file, ' +
+    'which keeps its formatting. Charged by length, a small amount; the answer says how much.',
   inputSchema: {
-    texts: z.array(z.string().min(1)).min(1).max(50).describe('The texts, each translated on its own.'),
+    texts: z.array(z.string().min(1)).min(1).max(50).optional().describe('Separate strings, each translated on its own. Omit when passing text.'),
+    text: z.string().min(1).max(100000).optional().describe('One whole text, paragraphs and line breaks included, instead of texts.'),
     target_language: z.string().describe(`Language to translate into. ${LANGUAGE}`),
-    source_language: z.string().optional().describe('Language of the texts; omit to detect it.'),
+    source_language: z.string().optional().describe('Language of the text; omit to detect it.'),
   },
-}, async ({ texts, target_language, source_language }) => {
+}, async ({ texts, text: whole, target_language, source_language }) => {
   try {
-    const answer = await api.translateText(texts, target_language, source_language);
+    if ((texts === undefined) === (whole === undefined)) throw new EqualangError('Pass exactly one of texts and text.', 'INVALID_REQUEST');
+    const answer = await api.translateText(whole === undefined ? { texts: texts! } : { text: whole }, target_language, source_language);
     return text({
       translations: answer.translations.map((item) => item.error
         ? { error: item.error.message, code: item.error.code, retryable: item.error.retryable }

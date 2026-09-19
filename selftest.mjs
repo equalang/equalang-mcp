@@ -107,6 +107,11 @@ if (!keyed) {
   check('translate_text answers in order and says what it charged',
     !words.isError && words.payload.translations?.length === 2 && words.payload.translations.every((t) => t.text) && typeof words.payload.credits_charged === 'number', JSON.stringify(words.payload));
 
+  const article = await tool('translate_text', { text: 'Opening paragraph.\n\n' + 'This sentence belongs to a longer piece. '.repeat(160), target_language: 'zh-CN' });
+  check('one long text goes in whole and comes back as one translation', !article.isError && article.payload.translations?.length === 1 && article.payload.translations[0].text, JSON.stringify(article.payload).slice(0, 200));
+  const neither = await tool('translate_text', { target_language: 'zh-CN' });
+  check('neither texts nor text is refused before anything is sent', neither.isError && neither.payload.code === 'INVALID_REQUEST');
+
   if (documentPath && existsSync(documentPath)) {
     console.log('\n== a document, end to end (spends credits)');
     const estimate = await tool('estimate_cost', { path: documentPath });

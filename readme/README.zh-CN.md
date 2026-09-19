@@ -37,7 +37,7 @@ Codex：`codex mcp add equalang --env EQUALANG_API_KEY=el_... -- npx -y @equalan
 | --- | --- |
 | `translate_file` | 把文件（路径或公开 URL）翻译成另一种语言，结果保存在原文件旁边。 |
 | `transcribe_recording` | 把音频或视频里说的话写成带时间轴的文本（SRT、VTT、TXT、JSON）。 |
-| `translate_text` | 按顺序翻译最多 50 条简短的纯文本。 |
+| `translate_text` | 按顺序翻译多条独立的字符串，或一整篇长文本，由 Equalang 自行按句切分。 |
 | `estimate_cost` | 只上传文件，不启动任何任务；返回该文件上一个任务最多要花多少，以及一个 `file_id`，凭它启动任务无需再次上传。免费。 |
 | `check_job` | 重新接上一个任务，并在它完成后保存结果。 |
 | `cancel_job` | 停止排队中或运行中的任务。已取消的任务不收费。 |
@@ -48,7 +48,7 @@ Codex：`codex mcp add equalang --env EQUALANG_API_KEY=el_... -- npx -y @equalan
 
 **语言。** 代码形如 `en`、`zh-CN`、`ja`。本包不内置语言列表：`list_languages` 从线上 API 读取代码和名称（文件支持的语言比文本少），所以 Equalang 新增的语言无需更新即可使用。不填源语言则自动检测。
 
-**格式和限制。** 支持上面列出的格式，单个文件最大 100 MB；`translate_text` 最多接受 50 条文本，每条 5,000 字符，每次调用 20,000 字符。
+**格式和限制。** 支持上面列出的格式，单个文件最大 100 MB；`translate_text` 最多接受 50 条文本，每条 5,000 字符（每次调用 20,000），或一条最多 100,000 字符的文本。
 
 ## 设计思路
 

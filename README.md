@@ -37,7 +37,7 @@ Needs Node 18 or later. Without a key the server still starts and lists its tool
 | --- | --- |
 | `translate_file` | Translate a file (path or public URL) into another language and save the result beside it. |
 | `transcribe_recording` | Write down what an audio or video file says, as timed text (SRT, VTT, TXT, JSON). |
-| `translate_text` | Translate up to 50 short plain texts, in order. |
+| `translate_text` | Translate separate strings, in order - or one long text, which Equalang cuts at sentences itself. |
 | `estimate_cost` | Upload a file without starting anything; answers with the most a job on it can cost, and a `file_id` that starts the job without a second upload. Free. |
 | `check_job` | Pick a job up again, and save its results once it has finished. |
 | `cancel_job` | Stop a queued or running job. A cancelled job is not charged. |
@@ -48,7 +48,7 @@ Needs Node 18 or later. Without a key the server still starts and lists its tool
 
 **Languages.** Codes look like `en`, `zh-CN`, `ja`. No list is built into this package: `list_languages` reads the codes and names from the live API (fewer for files than for text), so a language Equalang adds is available without an update. Omit the source language to have it detected.
 
-**Formats and limits.** The formats above, up to 100 MB a file; `translate_text` takes up to 50 texts of 5,000 characters, 20,000 characters a call.
+**Formats and limits.** The formats above, up to 100 MB a file; `translate_text` takes up to 50 texts of 5,000 characters (20,000 a call), or one text of up to 100,000.
 
 ## How it is built
 
