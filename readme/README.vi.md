@@ -11,7 +11,7 @@
 
 > **Từ khóa:** dịch tài liệu, dịch pdf, dịch pdf giữ nguyên định dạng, dịch file word, dịch file docx, dịch powerpoint, dịch file excel, dịch epub, dịch phụ đề, dịch file srt, dịch chữ trong ảnh, dịch video, chuyển giọng nói thành văn bản, chép lời ghi âm, dịch bằng ai, api dịch thuật, mcp server, model context protocol, claude mcp, cursor mcp, translation api
 
-**Dịch tệp, giữ nguyên bố cục.** Một máy chủ MCP cho [Equalang](https://equalang.com) - trình dịch AI làm việc trên trọn tệp: PDF trả về vẫn là PDF, bản trình chiếu vẫn là bản trình chiếu, bảng, hình ảnh và công thức nằm nguyên chỗ cũ. Nó còn dịch phụ đề và hình ảnh, biến âm thanh và video thành phụ đề đã dịch hoặc bản chép lời, và dịch hàng loạt chuỗi văn bản. Dùng được trong Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code và mọi client MCP khác.
+**Dịch tệp, giữ nguyên bố cục.** Một máy chủ MCP cho [Equalang](https://equalang.com) - trình dịch AI làm việc trên trọn tệp: PDF trả về vẫn là PDF, bản trình chiếu vẫn là bản trình chiếu, bảng, hình ảnh và công thức nằm nguyên chỗ cũ. Nó còn dịch phụ đề và hình ảnh, biến âm thanh và video thành phụ đề đã dịch hoặc bản chép lời, và dịch hàng loạt văn bản ngắn. Dùng được trong Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code và mọi client MCP khác.
 
 ```bash
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
@@ -19,17 +19,17 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 ## Tính năng
 
-- **Định dạng nào vào, định dạng ấy ra** - PDF, DOCX, PPTX, XLSX, EPUB, HTML và TXT trả về đúng định dạng cũ, vẫn chỉnh sửa được, bảng, hình ảnh, công thức và bố cục trang giữ nguyên
+- **Tài liệu** - PDF, DOCX, PPTX, XLSX, EPUB, HTML và TXT trả về đúng định dạng cũ, vẫn chỉnh sửa được, bảng, hình ảnh, công thức và bố cục trang giữ nguyên
 - **Phụ đề và hình ảnh** - SRT và VTT giữ nguyên mốc thời gian, tùy chọn kèm dòng gốc phía trên bản dịch; JPG, PNG, WebP và BMP trả về với phần chữ trong ảnh đã được dịch
 - **Âm thanh và video** - MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM và MKV trở thành phụ đề đã dịch, hoặc bản chép lời bằng chính ngôn ngữ được nói (SRT, VTT, TXT, JSON)
-- **Văn bản hàng loạt** - các chuỗi riêng lẻ được dịch theo đúng thứ tự, hoặc một văn bản dài (tối đa 100,000 ký tự) do Equalang tự cắt theo câu
-- **Hơn 100 ngôn ngữ** - hơn 100 cho văn bản và 12 cho tệp, tự động phát hiện ngôn ngữ nguồn khi bạn bỏ trống
+- **Văn bản hàng loạt** - các văn bản ngắn được dịch theo đúng thứ tự, hoặc một văn bản dài (tối đa 100,000 ký tự) do Equalang tự cắt theo câu
+- **Ngôn ngữ** - hơn 100 cho văn bản và 12 cho tệp, tự động phát hiện ngôn ngữ nguồn khi bạn bỏ trống
 
 ## Lấy khóa
 
-Đăng ký tại <https://equalang.com> và tạo khóa tại <https://equalang.com/api-keys>. Tài khoản mới có sẵn credit miễn phí - đủ để chạy thử một tài liệu và xem kết quả trả về.
+Đăng ký tại <https://equalang.com> và tạo khóa tại <https://equalang.com/api-keys>. Tài khoản mới có sẵn credit miễn phí, đủ để dịch thử một tài liệu.
 
-Khóa được đặt trong một biến môi trường ở cấu hình của client MCP, không bao giờ nằm trong URL. Khóa chỉ hiển thị một lần; Equalang chỉ lưu giá trị băm của nó. Không có khóa, máy chủ vẫn khởi động và liệt kê các công cụ; công cụ nào cần khóa sẽ trả lời bằng cách lấy khóa.
+Khóa được đặt trong một biến môi trường ở cấu hình của client MCP, không bao giờ nằm trong URL. Không có khóa, máy chủ vẫn khởi động và liệt kê các công cụ; công cụ nào cần khóa sẽ trả lời bằng cách lấy khóa.
 
 ## Cài đặt
 
@@ -87,14 +87,14 @@ Thích dùng skill hơn? [equalang-skill](https://github.com/equalang/equalang-s
 | --- | --- |
 | `translate_file` | Dịch một tệp (đường dẫn hoặc URL công khai) sang ngôn ngữ khác và lưu kết quả ngay cạnh tệp gốc. |
 | `transcribe_recording` | Chép lại lời nói trong tệp âm thanh hoặc video thành văn bản có mốc thời gian (SRT, VTT, TXT, JSON). |
-| `translate_text` | Dịch các chuỗi riêng lẻ, theo đúng thứ tự - hoặc một văn bản dài, do Equalang tự cắt theo câu. |
+| `translate_text` | Dịch các văn bản ngắn, theo đúng thứ tự - hoặc một văn bản dài, do Equalang tự cắt theo câu. |
 | `estimate_cost` | Tải tệp lên mà không khởi chạy gì; trả về chi phí tối đa của một tác vụ trên tệp đó, kèm một `file_id` để khởi chạy tác vụ mà không phải tải lên lần nữa. Miễn phí. |
 | `check_job` | Tiếp tục theo dõi một tác vụ, và lưu kết quả khi nó hoàn tất. |
 | `cancel_job` | Dừng một tác vụ đang chờ hoặc đang chạy. Tác vụ đã hủy không bị tính phí. |
 | `get_credit_balance` | Số credit của tài khoản. |
-| `list_languages` | Mã và tên ngôn ngữ, đọc từ API đang chạy. Không cần khóa. |
+| `list_languages` | Toàn bộ mã và tên ngôn ngữ. Không cần khóa. |
 
-Mã ngôn ngữ có dạng `en`, `zh-CN`, `ja`; `list_languages` đọc chúng từ API đang chạy, nên ngôn ngữ Equalang mới thêm dùng được ngay mà không cần cập nhật ở đây. Tác vụ mất vài phút - công cụ chờ tối đa `wait_seconds` (mặc định 50 s, tối đa 240), rồi trả lại id tác vụ cho `check_job`.
+Mã ngôn ngữ có dạng `en`, `zh-CN`, `ja`; `list_languages` có danh sách đầy đủ. Tác vụ mất vài phút - công cụ chờ tối đa `wait_seconds` (mặc định 50 s, tối đa 240), rồi trả lại một id tác vụ để `check_job` theo dõi tiếp.
 
 ## Liên kết
 

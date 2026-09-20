@@ -11,7 +11,7 @@
 
 > **Stichwörter:** pdf übersetzen, pdf übersetzer, pdf übersetzen layout beibehalten, dokumente übersetzen, word dokument übersetzen, docx übersetzen, powerpoint übersetzen, excel übersetzen, epub übersetzen, untertitel übersetzen, srt übersetzen, bild übersetzen, text im bild übersetzen, video übersetzen, audio transkribieren, sprache in text, ki übersetzer, mcp server, model context protocol, claude mcp, cursor mcp, translation api
 
-**Datei übersetzen, Layout behalten.** Ein MCP-Server für [Equalang](https://equalang.com) – einen KI-Übersetzer, der mit ganzen Dateien arbeitet: Ein PDF kommt als PDF zurück, eine Präsentation als Präsentation, Tabellen, Bilder und Formeln bleiben, wo sie waren. Er übersetzt außerdem Untertitel und Bilder, macht aus Audio und Video übersetzte Untertitel oder ein Transkript und übersetzt Strings in großen Mengen. Läuft in Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code und jedem anderen MCP-Client.
+**Datei übersetzen, Layout behalten.** Ein MCP-Server für [Equalang](https://equalang.com) – einen KI-Übersetzer, der mit ganzen Dateien arbeitet: Ein PDF kommt als PDF zurück, eine Präsentation als Präsentation, Tabellen, Bilder und Formeln bleiben, wo sie waren. Er übersetzt außerdem Untertitel und Bilder, macht aus Audio und Video übersetzte Untertitel oder ein Transkript und übersetzt kurze Texte in großen Mengen. Läuft in Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code und jedem anderen MCP-Client.
 
 ```bash
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
@@ -19,17 +19,17 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 ## Funktionen
 
-- **Format rein, Format raus** – PDF, DOCX, PPTX, XLSX, EPUB, HTML und TXT kommen im selben Format zurück, weiterhin bearbeitbar, Tabellen, Bilder, Formeln und Seitenlayout an ihrem Platz
+- **Dokumente** – PDF, DOCX, PPTX, XLSX, EPUB, HTML und TXT kommen im selben Format zurück, weiterhin bearbeitbar, Tabellen, Bilder, Formeln und Seitenlayout an ihrem Platz
 - **Untertitel und Bilder** – SRT und VTT behalten ihr Timing, auf Wunsch mit der Originalzeile über der Übersetzung; JPG, PNG, WebP und BMP kommen mit übersetztem Text im Bild zurück
 - **Audio und Video** – aus MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM und MKV werden übersetzte Untertitel oder ein Transkript in der gesprochenen Sprache (SRT, VTT, TXT, JSON)
-- **Text in großen Mengen** – einzelne Strings, in ihrer Reihenfolge übersetzt, oder ein langer Text (bis zu 100.000 Zeichen), den Equalang selbst an Satzgrenzen teilt
-- **Über 100 Sprachen** – über 100 für Text und 12 für Dateien, wobei die Quellsprache erkannt wird, wenn du sie weglässt
+- **Text in großen Mengen** – kurze Texte, in ihrer Reihenfolge übersetzt, oder ein langer Text (bis zu 100.000 Zeichen), den Equalang selbst an Satzgrenzen teilt
+- **Sprachen** – über 100 für Text und 12 für Dateien, wobei die Quellsprache erkannt wird, wenn du sie weglässt
 
 ## Schlüssel holen
 
-Registriere dich unter <https://equalang.com> und erstelle einen Schlüssel unter <https://equalang.com/api-keys>. Neue Konten starten mit kostenlosen Credits – genug, um ein Dokument durchlaufen zu lassen und zu sehen, was zurückkommt.
+Registriere dich unter <https://equalang.com> und erstelle einen Schlüssel unter <https://equalang.com/api-keys>. Neue Konten bekommen kostenlose Credits – genug, um ein Dokument zu übersetzen und es auszuprobieren.
 
-Der Schlüssel gehört in eine Umgebungsvariable in der Konfiguration des MCP-Clients, nie in eine URL. Er wird nur einmal angezeigt; Equalang speichert lediglich einen Hash davon. Ohne Schlüssel startet der Server trotzdem und listet seine Tools auf; ein Tool, das den Schlüssel braucht, antwortet mit dem Hinweis, wie man einen bekommt.
+Der Schlüssel gehört in eine Umgebungsvariable in der Konfiguration des MCP-Clients, nie in eine URL. Ohne Schlüssel startet der Server trotzdem und listet seine Tools auf; ein Tool, das den Schlüssel braucht, antwortet mit dem Hinweis, wie man einen bekommt.
 
 ## Installation
 
@@ -87,14 +87,14 @@ Lieber ein Skill? [equalang-skill](https://github.com/equalang/equalang-skill) b
 | --- | --- |
 | `translate_file` | Übersetzt eine Datei (Pfad oder öffentliche URL) in eine andere Sprache und speichert das Ergebnis daneben. |
 | `transcribe_recording` | Schreibt auf, was in einer Audio- oder Videodatei gesagt wird, als Text mit Zeitmarken (SRT, VTT, TXT, JSON). |
-| `translate_text` | Übersetzt einzelne Strings, in ihrer Reihenfolge – oder einen langen Text, den Equalang selbst an Satzgrenzen teilt. |
+| `translate_text` | Übersetzt kurze Texte, in ihrer Reihenfolge – oder einen langen Text, den Equalang selbst an Satzgrenzen teilt. |
 | `estimate_cost` | Lädt eine Datei hoch, ohne etwas zu starten; antwortet mit dem Höchstbetrag, den ein Auftrag damit kosten kann, und einer `file_id`, die den Auftrag ohne zweiten Upload startet. Kostenlos. |
 | `check_job` | Nimmt einen Auftrag wieder auf und speichert seine Ergebnisse, sobald er fertig ist. |
 | `cancel_job` | Stoppt einen wartenden oder laufenden Auftrag. Ein abgebrochener Auftrag wird nicht berechnet. |
 | `get_credit_balance` | Die Credits des Kontos. |
-| `list_languages` | Sprachcodes und -namen, aus der Live-API gelesen. Braucht keinen Schlüssel. |
+| `list_languages` | Alle Sprachcodes und -namen. Braucht keinen Schlüssel. |
 
-Sprachcodes sehen aus wie `en`, `zh-CN`, `ja`; `list_languages` liest sie aus der Live-API, sodass eine Sprache, die Equalang hinzufügt, ohne Update verfügbar ist. Ein Auftrag dauert Minuten – ein Tool wartet bis zu `wait_seconds` (standardmäßig 50 s, höchstens 240) und gibt dann die Auftrags-ID für `check_job` zurück.
+Sprachcodes sehen aus wie `en`, `zh-CN`, `ja`; die vollständige Liste hat `list_languages`. Ein Auftrag dauert Minuten – ein Tool wartet bis zu `wait_seconds` (standardmäßig 50 s, höchstens 240) und gibt dann eine Auftrags-ID zurück, die `check_job` wieder aufnimmt.
 
 ## Links
 

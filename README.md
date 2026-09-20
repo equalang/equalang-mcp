@@ -11,7 +11,7 @@
 
 > **Keywords:** document translation, pdf translator, translate pdf keep layout, docx translation, pptx translation, excel translation, epub translation, subtitle translation, srt translator, image translation, video translation, audio transcription, speech to text, ai translator, mcp server, model context protocol, claude mcp, cursor mcp, translation api
 
-**Translate the file, keep the layout.** An MCP server for [Equalang](https://equalang.com) - an AI translator that works on whole files: a PDF comes back as a PDF, a deck as a deck, with tables, images and formulas where they were. It also translates subtitles and pictures, turns audio and video into translated subtitles or a transcript, and translates strings in bulk. Works in Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code and every other MCP client.
+**Translate the file, keep the layout.** An MCP server for [Equalang](https://equalang.com) - an AI translator that works on whole files: a PDF comes back as a PDF, a deck as a deck, with tables, images and formulas where they were. It also translates subtitles and pictures, turns audio and video into translated subtitles or a transcript, and translates short texts in bulk. Works in Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code and every other MCP client.
 
 ```bash
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
@@ -19,17 +19,17 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 ## Features
 
-- **Format in, format out** - PDF, DOCX, PPTX, XLSX, EPUB, HTML and TXT come back in the same format, still editable, with tables, images, formulas and page layout in place
+- **Documents** - PDF, DOCX, PPTX, XLSX, EPUB, HTML and TXT come back in the same format, still editable, with tables, images, formulas and page layout in place
 - **Subtitles and pictures** - SRT and VTT keep their timing, optionally with the source line above the translation; JPG, PNG, WebP and BMP come back with the text in the picture translated
 - **Audio and video** - MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM and MKV become translated subtitles, or a transcript in the language spoken (SRT, VTT, TXT, JSON)
-- **Text in bulk** - separate strings translated in order, or one long text (up to 100,000 characters) that Equalang cuts at sentences itself
-- **100+ languages** - 100+ for text and 12 for files, with the source language detected when you leave it out
+- **Text in bulk** - short texts translated in order, or one long text (up to 100,000 characters) that Equalang cuts at sentences itself
+- **Languages** - 100+ for text and 12 for files; leave the source language out and it is detected
 
 ## Get a key
 
-Sign up at <https://equalang.com> and create a key at <https://equalang.com/api-keys>. New accounts start with free credits - enough to put a document through and see what comes back.
+Sign up at <https://equalang.com> and create a key at <https://equalang.com/api-keys>. New accounts start with free credits, enough to put a document through.
 
-The key goes in an environment variable of the MCP client's config, never in a URL. It is shown once; Equalang keeps only a hash of it. Without a key the server still starts and lists its tools; a tool that needs the key answers with how to get one.
+The key goes in an environment variable of the MCP client's config, never in a URL. Without a key the server still starts and lists its tools; a tool that needs the key answers with how to get one.
 
 ## Install
 
@@ -87,14 +87,14 @@ Prefer a skill? [equalang-skill](https://github.com/equalang/equalang-skill) off
 | --- | --- |
 | `translate_file` | Translate a file (path or public URL) into another language and save the result beside it. |
 | `transcribe_recording` | Write down what an audio or video file says, as timed text (SRT, VTT, TXT, JSON). |
-| `translate_text` | Translate separate strings, in order - or one long text, which Equalang cuts at sentences itself. |
+| `translate_text` | Translate short texts, in order - or one long text, which Equalang cuts at sentences itself. |
 | `estimate_cost` | Upload a file without starting anything; answers with the most a job on it can cost, and a `file_id` that starts the job without a second upload. Free. |
 | `check_job` | Pick a job up again, and save its results once it has finished. |
 | `cancel_job` | Stop a queued or running job. A cancelled job is not charged. |
 | `get_credit_balance` | The account's credits. |
-| `list_languages` | Language codes and names, read from the live API. Needs no key. |
+| `list_languages` | Every language code and name. Needs no key. |
 
-Language codes look like `en`, `zh-CN`, `ja`; `list_languages` reads them from the live API, so a language Equalang adds needs no update here. A job takes minutes - a tool waits up to `wait_seconds` (50 s by default, 240 at most), then hands back a job id for `check_job`.
+Language codes look like `en`, `zh-CN`, `ja`; `list_languages` has the full list. A job takes minutes - a tool waits up to `wait_seconds` (50 s by default, 240 at most), then hands back a job id for `check_job` to pick up.
 
 ## Links
 

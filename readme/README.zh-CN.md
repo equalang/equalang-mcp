@@ -11,7 +11,7 @@
 
 > **关键词：** 文档翻译、PDF翻译、PDF翻译保留排版、文档翻译保留格式、Word文档翻译、PPT翻译、Excel翻译、EPUB电子书翻译、论文翻译、字幕翻译、SRT字幕翻译、图片翻译、视频翻译、音频转文字、语音转文字、AI翻译、mcp server、model context protocol、claude mcp、cursor mcp、translation api
 
-**翻译文件，版式不变。** 这是 [Equalang](https://equalang.com) 的 MCP 服务器。Equalang 是一款整份文件直接翻译的 AI 翻译工具：PDF 进去，PDF 出来；演示文稿进去，演示文稿出来，表格、图片和公式都在原位。它还能翻译字幕和图片，把音频和视频变成翻译好的字幕或转写文本，并批量翻译字符串。可用于 Claude Code、Claude Desktop、Codex、Cursor、Windsurf、Cline、VS Code，以及其他所有 MCP 客户端。
+**翻译文件，版式不变。** 这是 [Equalang](https://equalang.com) 的 MCP 服务器。Equalang 是一款整份文件直接翻译的 AI 翻译工具：PDF 进去，PDF 出来；演示文稿进去，演示文稿出来，表格、图片和公式都在原位。它还能翻译字幕和图片，把音频和视频变成翻译好的字幕或转写文本，并批量翻译短文本。可用于 Claude Code、Claude Desktop、Codex、Cursor、Windsurf、Cline、VS Code，以及其他所有 MCP 客户端。
 
 ```bash
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
@@ -19,17 +19,17 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 ## 功能
 
-- **什么格式进，什么格式出**：PDF、DOCX、PPTX、XLSX、EPUB、HTML 和 TXT 译完仍是原格式，依然可编辑，表格、图片、公式和页面版式都在原位
+- **文档**：PDF、DOCX、PPTX、XLSX、EPUB、HTML 和 TXT 译完仍是原格式，依然可编辑，表格、图片、公式和页面版式都在原位
 - **字幕和图片**：SRT 和 VTT 保留时间轴，还可以选择把原文放在译文上方；JPG、PNG、WebP 和 BMP 返回时，图中的文字已经译好
 - **音频和视频**：MP3、M4A、WAV、FLAC、OGG、AAC、Opus、MP4、MOV、WebM 和 MKV 可变成翻译好的字幕，或原语言的转写文本（SRT、VTT、TXT、JSON）
-- **批量文本**：多条独立的字符串按顺序翻译，或一整篇长文本（最多 100,000 字符），由 Equalang 自行按句切分
-- **100+ 种语言**：文本 100+ 种，文件 12 种；不填源语言则自动检测
+- **批量文本**：多条短文本按原顺序翻译，或一整篇长文本（最多 100,000 字符），由 Equalang 自行按句切分
+- **语言**：文本 100+ 种，文件 12 种；不填源语言就自动识别
 
 ## 获取密钥
 
-在 <https://equalang.com> 注册，然后在 <https://equalang.com/api-keys> 创建密钥。新账户自带免费积分——足够翻一份文档，看看效果如何。
+在 <https://equalang.com> 注册，然后在 <https://equalang.com/api-keys> 创建密钥。新账户自带免费积分，够翻一份文档试试手。
 
-密钥放在 MCP 客户端配置的环境变量里，绝不要放进 URL。它只显示一次；Equalang 只保存它的哈希值。没有密钥时服务器照常启动并列出工具；需要密钥的工具会告诉你如何获取。
+密钥放在 MCP 客户端配置的环境变量里，绝不要放进 URL。没有密钥时服务器照常启动并列出工具；需要密钥的工具会告诉你如何获取。
 
 ## 安装
 
@@ -87,14 +87,14 @@ code --add-mcp '{"name":"equalang","command":"npx","args":["-y","@equalang/mcp"]
 | --- | --- |
 | `translate_file` | 把文件（路径或公开 URL）翻译成另一种语言，结果保存在原文件旁边。 |
 | `transcribe_recording` | 把音频或视频里说的话写成带时间轴的文本（SRT、VTT、TXT、JSON）。 |
-| `translate_text` | 按顺序翻译多条独立的字符串，或一整篇长文本，由 Equalang 自行按句切分。 |
+| `translate_text` | 按原顺序翻译多条短文本，或一整篇长文本，由 Equalang 自行按句切分。 |
 | `estimate_cost` | 只上传文件，不启动任何任务；返回该文件上一个任务最多要花多少，以及一个 `file_id`，凭它启动任务无需再次上传。免费。 |
 | `check_job` | 重新接上一个任务，并在它完成后保存结果。 |
 | `cancel_job` | 停止排队中或运行中的任务。已取消的任务不收费。 |
 | `get_credit_balance` | 账户的积分。 |
-| `list_languages` | 语言代码和名称，从线上 API 读取。无需密钥。 |
+| `list_languages` | 全部语言代码和名称。无需密钥。 |
 
-语言代码形如 `en`、`zh-CN`、`ja`；`list_languages` 从线上 API 读取代码和名称，所以 Equalang 新增的语言无需更新即可使用。任务要跑几分钟——工具最多等 `wait_seconds` 那么久（默认 50 秒，最高 240），然后交回一个任务 id，交给 `check_job`。
+语言代码形如 `en`、`zh-CN`、`ja`，全部列表用 `list_languages` 查。任务要跑几分钟——工具最多等 `wait_seconds` 那么久（默认 50 秒，最高 240），然后交回一个任务 id，用 `check_job` 接着取结果。
 
 ## 链接
 

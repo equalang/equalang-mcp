@@ -11,7 +11,7 @@
 
 > **Anahtar kelimeler:** belge çevirisi, doküman çeviri, pdf çeviri, pdf çevirici, pdf çeviri format bozulmadan, word belgesi çeviri, powerpoint sunum çeviri, excel çeviri, epub çeviri, altyazı çeviri, srt çeviri, resimdeki yazıyı çevirme, video çeviri, ses dosyasını yazıya çevirme, sesi yazıya dökme, yapay zeka çeviri, mcp server, mcp sunucusu, model context protocol, claude mcp, cursor mcp, translation api
 
-**Dosyayı çevirin, düzeni koruyun.** [Equalang](https://equalang.com) için bir MCP sunucusu. Equalang, dosyaları bütün halinde çeviren bir yapay zekâ çevirmenidir: PDF yine PDF olarak, sunum yine sunum olarak geri gelir; tablolar, görseller ve formüller yerli yerinde kalır. Altyazıları ve resimleri de çevirir, ses ve videoyu çevrilmiş altyazıya ya da döküme dönüştürür, metinleri toplu halde çevirir. Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code ve diğer tüm MCP istemcilerinde çalışır.
+**Dosyayı çevirin, düzeni koruyun.** [Equalang](https://equalang.com) için bir MCP sunucusu. Equalang, dosyaları bütün halinde çeviren bir yapay zekâ çevirmenidir: PDF yine PDF olarak, sunum yine sunum olarak geri gelir; tablolar, görseller ve formüller yerli yerinde kalır. Altyazıları ve resimleri de çevirir, ses ve videoyu çevrilmiş altyazıya ya da döküme dönüştürür, kısa metinleri toplu halde çevirir. Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code ve diğer tüm MCP istemcilerinde çalışır.
 
 ```bash
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
@@ -19,17 +19,17 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 ## Özellikler
 
-- **Hangi biçimde girdiyse o biçimde çıkar** – PDF, DOCX, PPTX, XLSX, EPUB, HTML ve TXT aynı biçimde, düzenlenebilir halde geri gelir; tablolar, görseller, formüller ve sayfa düzeni yerinde kalır
+- **Belgeler** – PDF, DOCX, PPTX, XLSX, EPUB, HTML ve TXT aynı biçimde, düzenlenebilir halde geri gelir; tablolar, görseller, formüller ve sayfa düzeni yerinde kalır
 - **Altyazılar ve resimler** – SRT ve VTT zamanlamasını korur, istenirse kaynak satır çevirinin üstünde yer alır; JPG, PNG, WebP ve BMP, resmin içindeki metin çevrilmiş olarak geri gelir
 - **Ses ve video** – MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM ve MKV çevrilmiş altyazıya ya da konuşulan dilde bir döküme dönüşür (SRT, VTT, TXT, JSON)
-- **Toplu metin** – ayrı dizeler sırasıyla çevrilir ya da Equalang'ın cümle sınırlarından kendisinin böldüğü tek bir uzun metin (100.000 karaktere kadar)
-- **100+ dil** – metin için 100+, dosyalar için 12; kaynak dili boş bıraktığınızda otomatik olarak algılanır
+- **Toplu metin** – kısa metinler sırasıyla çevrilir ya da Equalang'ın cümle sınırlarından kendisinin böldüğü tek bir uzun metin (100.000 karaktere kadar)
+- **Diller** – metin için 100+, dosyalar için 12; kaynak dili boş bıraktığınızda otomatik olarak algılanır
 
 ## Anahtar alın
 
-<https://equalang.com> adresinde kaydolun ve <https://equalang.com/api-keys> adresinde bir anahtar oluşturun. Yeni hesaplar ücretsiz kredilerle başlar – bir belgeyi çevirtip geriye ne geldiğini görmeye yeter.
+<https://equalang.com> adresinde kaydolun ve <https://equalang.com/api-keys> adresinde bir anahtar oluşturun. Yeni hesaplar ücretsiz kredilerle başlar – bir belgeyi çevirip denemeye yeter.
 
-Anahtar, MCP istemcisinin yapılandırmasındaki bir ortam değişkenine yazılır, asla bir URL'ye değil. Yalnızca bir kez gösterilir; Equalang onun sadece hash'ini saklar. Anahtar olmadan da sunucu başlar ve araçlarını listeler; anahtar gerektiren bir araç, anahtarın nasıl alınacağını söyleyerek yanıt verir.
+Anahtar, MCP istemcisinin yapılandırmasındaki bir ortam değişkenine yazılır, asla bir URL'ye değil. Anahtar olmadan da sunucu başlar ve araçlarını listeler; anahtar gerektiren bir araç, anahtarın nasıl alınacağını söyleyerek yanıt verir.
 
 ## Kurulum
 
@@ -87,14 +87,14 @@ Beceri mi tercih edersiniz? [equalang-skill](https://github.com/equalang/equalan
 | --- | --- |
 | `translate_file` | Bir dosyayı (yol ya da herkese açık URL) başka bir dile çevirir ve sonucu dosyanın yanına kaydeder. |
 | `transcribe_recording` | Bir ses ya da video dosyasında söylenenleri zaman damgalı metin olarak yazar (SRT, VTT, TXT, JSON). |
-| `translate_text` | Ayrı dizeleri sırasıyla çevirir – ya da Equalang'ın cümle sınırlarından kendisinin böldüğü tek bir uzun metni. |
+| `translate_text` | Kısa metinleri sırasıyla çevirir – ya da Equalang'ın cümle sınırlarından kendisinin böldüğü tek bir uzun metni. |
 | `estimate_cost` | Hiçbir şey başlatmadan dosyayı yükler; o dosyadaki bir işin en fazla kaça mal olabileceğini ve işi ikinci bir yükleme olmadan başlatan bir `file_id` döndürür. Ücretsizdir. |
 | `check_job` | Bir işi kaldığı yerden yeniden ele alır ve iş bittiğinde sonuçlarını kaydeder. |
 | `cancel_job` | Kuyruktaki ya da çalışan bir işi durdurur. İptal edilen iş ücretlendirilmez. |
 | `get_credit_balance` | Hesabın kredileri. |
-| `list_languages` | Canlı API'den okunan dil kodları ve adları. Anahtar gerektirmez. |
+| `list_languages` | Bütün dil kodları ve adları. Anahtar gerektirmez. |
 
-Dil kodları `en`, `zh-CN`, `ja` biçimindedir; `list_languages` bunları canlı API'den okur, böylece Equalang'ın eklediği bir dil güncelleme gerekmeden kullanılabilir. İşler dakikalar sürer – bir araç en çok `wait_seconds` kadar bekler (varsayılan 50 sn, en fazla 240), sonra `check_job` için iş kimliğini geri verir.
+Dil kodları `en`, `zh-CN`, `ja` biçimindedir; tam liste `list_languages` içinde. İşler dakikalar sürer – bir araç en çok `wait_seconds` kadar bekler (varsayılan 50 sn, en fazla 240), sonra `check_job` ile devam edilecek bir iş kimliği verir.
 
 ## Bağlantılar
 

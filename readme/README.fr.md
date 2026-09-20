@@ -11,7 +11,7 @@
 
 > **Mots-clés :** traduire un pdf, traducteur pdf, traduire un pdf en gardant la mise en page, traduction de documents, traduire un document word, traduire un docx, traduire un powerpoint, traduire un fichier excel, traduire un epub, traduire des sous-titres, traducteur srt, traduire une image, traduire le texte d'une image, traduire une vidéo, transcription audio en texte, traducteur ia, mcp server, serveur mcp, model context protocol, claude mcp, cursor mcp, translation api
 
-**Traduisez le fichier, gardez la mise en page.** Un serveur MCP pour [Equalang](https://equalang.com), un traducteur IA qui travaille sur des fichiers entiers : un PDF revient en PDF, une présentation en présentation, tableaux, images et formules à leur place. Il traduit aussi les sous-titres et les images, transforme l'audio et la vidéo en sous-titres traduits ou en transcription, et traduit des chaînes de texte par lots. Fonctionne dans Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code et tout autre client MCP.
+**Traduisez le fichier, gardez la mise en page.** Un serveur MCP pour [Equalang](https://equalang.com), un traducteur IA qui travaille sur des fichiers entiers : un PDF revient en PDF, une présentation en présentation, tableaux, images et formules à leur place. Il traduit aussi les sous-titres et les images, transforme l'audio et la vidéo en sous-titres traduits ou en transcription, et traduit des textes courts par lots. Fonctionne dans Claude Code, Claude Desktop, Codex, Cursor, Windsurf, Cline, VS Code et tout autre client MCP.
 
 ```bash
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
@@ -19,17 +19,17 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 ## Fonctionnalités
 
-- **Le format à l'entrée, le même à la sortie** : PDF, DOCX, PPTX, XLSX, EPUB, HTML et TXT reviennent dans le même format, toujours modifiables, tableaux, images, formules et mise en page à leur place
+- **Documents** : PDF, DOCX, PPTX, XLSX, EPUB, HTML et TXT reviennent dans le même format, toujours modifiables, tableaux, images, formules et mise en page à leur place
 - **Sous-titres et images** : SRT et VTT gardent leur minutage, avec au besoin la ligne d'origine au-dessus de la traduction ; JPG, PNG, WebP et BMP reviennent avec le texte de l'image traduit
 - **Audio et vidéo** : MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM et MKV deviennent des sous-titres traduits, ou une transcription dans la langue parlée (SRT, VTT, TXT, JSON)
-- **Texte par lots** : des chaînes séparées traduites dans l'ordre, ou un seul long texte (jusqu'à 100 000 caractères) qu'Equalang découpe lui-même par phrases
-- **Plus de 100 langues** : plus de 100 pour le texte et 12 pour les fichiers, avec la langue source détectée quand vous l'omettez
+- **Texte par lots** : des textes courts traduits dans l'ordre, ou un seul long texte (jusqu'à 100 000 caractères) qu'Equalang découpe lui-même par phrases
+- **Langues** : plus de 100 pour le texte et 12 pour les fichiers, avec la langue source détectée quand vous l'omettez
 
 ## Obtenir une clé
 
-Inscrivez-vous sur <https://equalang.com> et créez une clé sur <https://equalang.com/api-keys>. Les nouveaux comptes démarrent avec des crédits gratuits, de quoi faire passer un document et voir ce qui en ressort.
+Inscrivez-vous sur <https://equalang.com> et créez une clé sur <https://equalang.com/api-keys>. Les nouveaux comptes reçoivent des crédits gratuits, de quoi traduire un document pour essayer.
 
-La clé va dans une variable d'environnement de la configuration du client MCP, jamais dans une URL. Elle n'est affichée qu'une fois ; Equalang n'en conserve qu'un hash. Sans clé, le serveur démarre quand même et liste ses outils ; un outil qui a besoin de la clé répond en indiquant comment en obtenir une.
+La clé va dans une variable d'environnement de la configuration du client MCP, jamais dans une URL. Sans clé, le serveur démarre quand même et liste ses outils ; un outil qui a besoin de la clé répond en indiquant comment en obtenir une.
 
 ## Installation
 
@@ -87,14 +87,14 @@ Vous préférez un skill ? [equalang-skill](https://github.com/equalang/equalang
 | --- | --- |
 | `translate_file` | Traduit un fichier (chemin ou URL publique) dans une autre langue et enregistre le résultat à côté. |
 | `transcribe_recording` | Met par écrit ce que dit un fichier audio ou vidéo, sous forme de texte horodaté (SRT, VTT, TXT, JSON). |
-| `translate_text` | Traduit des chaînes séparées, dans l'ordre, ou bien un seul long texte, qu'Equalang découpe lui-même par phrases. |
+| `translate_text` | Traduit des textes courts, dans l'ordre, ou bien un seul long texte, qu'Equalang découpe lui-même par phrases. |
 | `estimate_cost` | Envoie un fichier sans rien lancer ; répond avec le coût maximal d'une tâche sur ce fichier, et un `file_id` qui lance la tâche sans second envoi. Gratuit. |
 | `check_job` | Reprend une tâche et enregistre ses résultats une fois qu'elle est terminée. |
 | `cancel_job` | Arrête une tâche en file d'attente ou en cours. Une tâche annulée n'est pas facturée. |
 | `get_credit_balance` | Les crédits du compte. |
-| `list_languages` | Codes et noms de langues, lus depuis l'API en direct. Ne nécessite pas de clé. |
+| `list_languages` | Tous les codes et noms de langues. Ne nécessite pas de clé. |
 
-Les codes de langue ressemblent à `en`, `zh-CN`, `ja` ; `list_languages` les lit depuis l'API en direct, de sorte qu'une langue ajoutée par Equalang est disponible sans mise à jour. Une tâche prend des minutes : un outil attend jusqu'à `wait_seconds` (50 s par défaut, 240 au maximum), puis rend l'identifiant de la tâche pour `check_job`.
+Les codes de langue ressemblent à `en`, `zh-CN`, `ja` ; `list_languages` en donne la liste complète. Une tâche prend des minutes : un outil attend jusqu'à `wait_seconds` (50 s par défaut, 240 au maximum), puis rend un identifiant de tâche que `check_job` reprendra.
 
 ## Liens
 

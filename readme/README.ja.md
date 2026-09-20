@@ -11,7 +11,7 @@
 
 > **キーワード:** ドキュメント翻訳, PDF 翻訳, PDF 翻訳 レイアウト保持, PDF 翻訳 レイアウトそのまま, Word 翻訳, パワーポイント 翻訳, エクセル 翻訳, EPUB 翻訳, 論文 翻訳, 字幕翻訳, SRT 翻訳, 画像翻訳, 動画翻訳, 音声 文字起こし, 動画 文字起こし, AI 翻訳, mcp server, model context protocol, claude mcp, cursor mcp, translation api
 
-**ファイルを翻訳しても、レイアウトはそのまま。** [Equalang](https://equalang.com) の MCP サーバーです。Equalang はファイルを丸ごと扱う AI 翻訳ツールで、PDF は PDF のまま、スライドはスライドのまま、表・画像・数式も元の位置で返ってきます。字幕や画像の翻訳、音声・動画からの翻訳済み字幕や書き起こしの作成、文字列の一括翻訳にも対応。Claude Code、Claude Desktop、Codex、Cursor、Windsurf、Cline、VS Code をはじめ、あらゆる MCP クライアントで動きます。
+**ファイルを翻訳しても、レイアウトはそのまま。** [Equalang](https://equalang.com) の MCP サーバーです。Equalang はファイルを丸ごと扱う AI 翻訳ツールで、PDF は PDF のまま、スライドはスライドのまま、表・画像・数式も元の位置で返ってきます。字幕や画像の翻訳、音声・動画からの翻訳済み字幕や書き起こしの作成、短いテキストの一括翻訳にも対応。Claude Code、Claude Desktop、Codex、Cursor、Windsurf、Cline、VS Code をはじめ、あらゆる MCP クライアントで動きます。
 
 ```bash
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
@@ -19,17 +19,17 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 ## 特長
 
-- **形式はそのまま** - PDF、DOCX、PPTX、XLSX、EPUB、HTML、TXT は同じ形式のまま、編集可能な状態で返ってきます。表、画像、数式、ページレイアウトも元の位置のままです
+- **ドキュメント** - PDF、DOCX、PPTX、XLSX、EPUB、HTML、TXT は同じ形式のまま、編集可能な状態で返ってきます。表、画像、数式、ページレイアウトも元の位置のままです
 - **字幕と画像** - SRT と VTT はタイミングを保持し、訳文の上に原文を併記することもできます。JPG、PNG、WebP、BMP は画像内の文字が翻訳された状態で返ってきます
 - **音声と動画** - MP3、M4A、WAV、FLAC、OGG、AAC、Opus、MP4、MOV、WebM、MKV を、翻訳済みの字幕、または話されている言語のままの書き起こし (SRT、VTT、TXT、JSON) にします
-- **テキストの一括翻訳** - 個別の文字列を順番どおりに翻訳。長いテキスト 1 件 (100,000 文字まで) も渡せ、その場合は Equalang が文の区切りで分割します
-- **100 以上の言語** - テキストは 100 以上、ファイルは 12 の言語に対応。ソース言語を省略すると自動検出されます
+- **テキストの一括翻訳** - 短いテキストを順番どおりに翻訳。長いテキスト 1 件 (100,000 文字まで) も渡せ、その場合は Equalang が文の区切りで分割します
+- **言語** - テキストは 100 以上、ファイルは 12 の言語に対応。ソース言語を省略すると自動検出されます
 
 ## キーを取得する
 
-<https://equalang.com> で登録し、<https://equalang.com/api-keys> でキーを作成します。新規アカウントには無料クレジットが付いてきます。ドキュメントを 1 本通して、仕上がりを確かめるには十分な量です。
+<https://equalang.com> で登録し、<https://equalang.com/api-keys> でキーを作成します。新規アカウントには無料クレジットが付いてきます。ドキュメントを 1 本試すには十分です。
 
-キーは MCP クライアントの設定の環境変数に入れます。URL には決して入れないでください。キーが表示されるのは一度だけで、Equalang が保持するのはそのハッシュだけです。キーがなくてもサーバーは起動し、ツール一覧を返します。キーが必要なツールは、キーの取得方法を答えます。
+キーは MCP クライアントの設定の環境変数に入れます。URL には決して入れないでください。キーがなくてもサーバーは起動し、ツール一覧を返します。キーが必要なツールは、キーの取得方法を答えます。
 
 ## インストール
 
@@ -87,14 +87,14 @@ code --add-mcp '{"name":"equalang","command":"npx","args":["-y","@equalang/mcp"]
 | --- | --- |
 | `translate_file` | ファイル (パスまたは公開 URL) を別の言語に翻訳し、結果を元ファイルの隣に保存します。 |
 | `transcribe_recording` | 音声・動画ファイルで話されている内容を、タイムスタンプ付きテキスト (SRT、VTT、TXT、JSON) として書き起こします。 |
-| `translate_text` | 個別の文字列を順番どおりに翻訳します。長いテキスト 1 件も渡せ、その場合は Equalang が文の区切りで分割します。 |
+| `translate_text` | 短いテキストを順番どおりに翻訳します。長いテキスト 1 件も渡せ、その場合は Equalang が文の区切りで分割します。 |
 | `estimate_cost` | 何も開始せずにファイルをアップロードし、そのファイルに対するジョブの費用の上限と、再アップロードなしでジョブを開始できる `file_id` を返します。無料。 |
 | `check_job` | ジョブの確認を再開し、完了していれば結果を保存します。 |
 | `cancel_job` | 待機中または実行中のジョブを停止します。キャンセルしたジョブは課金されません。 |
 | `get_credit_balance` | アカウントのクレジット残高。 |
-| `list_languages` | 言語コードと名称。稼働中の API から読み取ります。キー不要。 |
+| `list_languages` | すべての言語コードと名称。キー不要。 |
 
-言語コードは `en`、`zh-CN`、`ja` のような形式です。`list_languages` が稼働中の API からコードと名称を読み取るため、Equalang が追加した言語はアップデートなしで使えます。ジョブには数分かかります。ツールは `wait_seconds` まで待ち (デフォルト 50 s、最大 240)、そのあとは `check_job` 用のジョブ id を返します。
+言語コードは `en`、`zh-CN`、`ja` のような形式で、全リストは `list_languages` にあります。ジョブには数分かかります。ツールは `wait_seconds` まで待ち (デフォルト 50 s、最大 240)、そのあとは `check_job` で受け取るためのジョブ id を返します。
 
 ## リンク
 
