@@ -96,20 +96,6 @@ Beceri mi tercih edersiniz? [equalang-skill](https://github.com/equalang/equalan
 
 Dil kodları `en`, `zh-CN`, `ja` biçimindedir; `list_languages` bunları canlı API'den okur, böylece Equalang'ın eklediği bir dil güncelleme gerekmeden kullanılabilir. İşler dakikalar sürer – bir araç en çok `wait_seconds` kadar bekler (varsayılan 50 sn, en fazla 240), sonra `check_job` için iş kimliğini geri verir.
 
-## Sık sorulan sorular
-
-**Çevrilen PDF düzenini korur mu?**
-Evet – zaten bütün mesele bu. Metin eski yerine konur; tablolar, görseller ve formüller yerinde kalır; DOCX, PPTX ya da XLSX düzenlenebilir kalır.
-
-**Belgem modele gönderiliyor mu?**
-Hayır. Sunucu dosyayı Equalang'a yükler ve bir yol ile yanıt verir. 300 sayfalık bir makale hiç token harcamaz.
-
-**Bir resmin içindeki metni çevirebilir mi?**
-Evet. JPG, PNG, WebP ya da BMP içindeki metin tanınır, çevrilir ve resme yeniden işlenir.
-
-**Bir iş kaça mal olur?**
-`estimate_cost` bunu hiçbir şey başlamadan önce söyler ve ücretsizdir. Fiyatlar <https://equalang.com/pricing> adresindedir.
-
 ## Bağlantılar
 
 - [Equalang](https://equalang.com) · [Fiyatlandırma](https://equalang.com/pricing) · [Geliştirici belgeleri](https://equalang.com/developers)

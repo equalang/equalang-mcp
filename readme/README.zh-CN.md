@@ -96,20 +96,6 @@ code --add-mcp '{"name":"equalang","command":"npx","args":["-y","@equalang/mcp"]
 
 语言代码形如 `en`、`zh-CN`、`ja`；`list_languages` 从线上 API 读取代码和名称，所以 Equalang 新增的语言无需更新即可使用。任务要跑几分钟——工具最多等 `wait_seconds` 那么久（默认 50 秒，最高 240），然后交回一个任务 id，交给 `check_job`。
 
-## 常见问题
-
-**翻译后的 PDF 还保留原来的排版吗？**
-保留——这正是它的意义所在。文字放回原来的位置，表格、图片和公式原地不动；DOCX、PPTX 和 XLSX 仍可编辑。
-
-**我的文档会被发给模型吗？**
-不会。服务器把文件上传到 Equalang，返回的是一个路径。一篇 300 页的论文不花一个 token。
-
-**能翻译图片里的文字吗？**
-能。JPG、PNG、WebP 或 BMP 中的文字会被识别、翻译，再画回图片里。
-
-**一个任务要花多少？**
-`estimate_cost` 会在任何任务开始之前告诉你，而且免费。价格见 <https://equalang.com/pricing>。
-
 ## 链接
 
 - [Equalang](https://equalang.com) · [价格](https://equalang.com/pricing) · [开发者文档](https://equalang.com/developers)

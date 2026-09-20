@@ -96,20 +96,6 @@ code --add-mcp '{"name":"equalang","command":"npx","args":["-y","@equalang/mcp"]
 
 언어 코드는 `en`, `zh-CN`, `ja`처럼 생겼습니다. `list_languages`가 실제 API에서 코드와 이름을 읽어 오므로, Equalang이 언어를 추가하면 업데이트 없이 바로 쓸 수 있습니다. 작업은 몇 분씩 걸립니다. 도구는 `wait_seconds`까지 기다린 뒤(기본 50초, 최대 240), `check_job`에 넘길 작업 id를 돌려줍니다.
 
-## 자주 묻는 질문
-
-**번역된 PDF의 레이아웃이 유지되나요?**
-네, 바로 그것이 핵심입니다. 텍스트는 원래 자리에 다시 들어가고 표와 이미지, 수식은 제자리에 남습니다. DOCX, PPTX, XLSX는 편집 가능한 상태 그대로입니다.
-
-**제 문서가 모델로 전송되나요?**
-아니요. 서버는 파일을 Equalang에 업로드하고 경로로 답할 뿐입니다. 300쪽짜리 논문에도 토큰은 들지 않습니다.
-
-**이미지 속 글자도 번역할 수 있나요?**
-네. JPG, PNG, WebP, BMP 속 글자를 인식해 번역한 뒤 이미지에 다시 그려 넣습니다.
-
-**작업 비용은 얼마인가요?**
-무엇이든 시작되기 전에 `estimate_cost`가 알려 주며, 무료입니다. 요금은 <https://equalang.com/pricing>에서 확인하세요.
-
 ## 링크
 
 - [Equalang](https://equalang.com) · [요금](https://equalang.com/pricing) · [개발자 문서](https://equalang.com/developers)

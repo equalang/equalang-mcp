@@ -96,20 +96,6 @@ code --add-mcp '{"name":"equalang","command":"npx","args":["-y","@equalang/mcp"]
 
 Los códigos de idioma tienen la forma `en`, `zh-CN`, `ja`; `list_languages` los lee de la API en vivo, de modo que un idioma que Equalang añada está disponible sin actualizar. Los trabajos tardan minutos: una herramienta espera hasta `wait_seconds` (50 s por defecto, 240 como máximo) y luego devuelve el id del trabajo para `check_job`.
 
-## Preguntas frecuentes
-
-**¿El PDF traducido conserva su maquetación?**
-Sí, de eso se trata. El texto se vuelve a colocar donde estaba, y las tablas, las imágenes y las fórmulas se quedan en su sitio; un DOCX, PPTX o XLSX sigue siendo editable.
-
-**¿Se envía mi documento al modelo?**
-No. El servidor sube el archivo a Equalang y responde con una ruta. Un artículo de 300 páginas no gasta tokens.
-
-**¿Puede traducir el texto que hay dentro de una imagen?**
-Sí. El texto de un JPG, PNG, WebP o BMP se reconoce, se traduce y se vuelve a dibujar en la imagen.
-
-**¿Cuánto cuesta un trabajo?**
-`estimate_cost` lo dice antes de que empiece nada, y es gratis. Los precios están en <https://equalang.com/pricing>.
-
 ## Enlaces
 
 - [Equalang](https://equalang.com) · [Precios](https://equalang.com/pricing) · [Documentación para desarrolladores](https://equalang.com/developers)

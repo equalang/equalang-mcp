@@ -96,20 +96,6 @@ Vous préférez un skill ? [equalang-skill](https://github.com/equalang/equalang
 
 Les codes de langue ressemblent à `en`, `zh-CN`, `ja` ; `list_languages` les lit depuis l'API en direct, de sorte qu'une langue ajoutée par Equalang est disponible sans mise à jour. Une tâche prend des minutes : un outil attend jusqu'à `wait_seconds` (50 s par défaut, 240 au maximum), puis rend l'identifiant de la tâche pour `check_job`.
 
-## Questions fréquentes
-
-**Le PDF traduit garde-t-il sa mise en page ?**
-Oui, c'est tout l'intérêt. Le texte est remis là où il était, et les tableaux, images et formules restent en place ; un DOCX, PPTX ou XLSX reste modifiable.
-
-**Mon document est-il envoyé au modèle ?**
-Non. Le serveur envoie le fichier à Equalang et répond par un chemin. Un article de 300 pages ne coûte aucun token.
-
-**Peut-il traduire le texte à l'intérieur d'une image ?**
-Oui. Le texte d'un JPG, PNG, WebP ou BMP est reconnu, traduit puis redessiné dans l'image.
-
-**Combien coûte une tâche ?**
-`estimate_cost` le dit avant que quoi que ce soit ne démarre, et c'est gratuit. Les tarifs sont sur <https://equalang.com/pricing>.
-
 ## Liens
 
 - [Equalang](https://equalang.com) · [Tarifs](https://equalang.com/pricing) · [Documentation développeur](https://equalang.com/developers)

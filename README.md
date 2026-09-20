@@ -96,20 +96,6 @@ Prefer a skill? [equalang-skill](https://github.com/equalang/equalang-skill) off
 
 Language codes look like `en`, `zh-CN`, `ja`; `list_languages` reads them from the live API, so a language Equalang adds needs no update here. A job takes minutes - a tool waits up to `wait_seconds` (50 s by default, 240 at most), then hands back a job id for `check_job`.
 
-## Questions people ask
-
-**Does the translated PDF keep its layout?**
-Yes - that is the point. Text is put back where it was, and tables, images and formulas stay in place; a DOCX, PPTX or XLSX stays editable.
-
-**Is my document sent to the model?**
-No. The server uploads the file to Equalang and answers with a path. A 300-page paper costs no tokens.
-
-**Can it translate the text inside a picture?**
-Yes. Text in a JPG, PNG, WebP or BMP is recognised, translated and drawn back into the picture.
-
-**What does a job cost?**
-`estimate_cost` says before anything starts, and it is free. Prices are at <https://equalang.com/pricing>.
-
 ## Links
 
 - [Equalang](https://equalang.com) · [Pricing](https://equalang.com/pricing) · [Developer docs](https://equalang.com/developers)
