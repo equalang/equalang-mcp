@@ -42,7 +42,14 @@ Regístrate en <https://equalang.com> y crea una clave en <https://equalang.com/
 
 La clave va en una variable de entorno de la configuración del cliente MCP, nunca en una URL. Sin clave, el servidor arranca igualmente y lista sus herramientas; una herramienta que necesita la clave responde indicando cómo conseguirla.
 
-La clave también puede guardarse una sola vez por equipo, en `~/.config/equalang/.env` como `EQUALANG_API_KEY=el_your_key`: el servidor lee ese archivo cuando su entorno no tiene clave, y el skill de Equalang también; así la configuración del cliente no necesita `env`.
+La clave también puede guardarse una sola vez por equipo, en `~/.config/equalang/.env`, que el skill de Equalang también lee:
+
+```bash
+# Sustituye el_your_key por tu clave
+mkdir -p ~/.config/equalang && echo 'EQUALANG_API_KEY=el_your_key' > ~/.config/equalang/.env && chmod 600 ~/.config/equalang/.env
+```
+
+El servidor toma `EQUALANG_API_KEY` primero de su entorno y solo lee el archivo si ahí no hay ninguna: una clave en la configuración del cliente tiene prioridad, y con el archivo la configuración del cliente no necesita `env`.
 
 ## Instalación
 

@@ -42,7 +42,14 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 密钥放在 MCP 客户端配置的环境变量里，绝不要放进 URL。没有密钥时服务器照常启动并列出工具；需要密钥的工具会告诉你如何获取。
 
-密钥也可以在每台机器上只存一次：写进 `~/.config/equalang/.env`（`EQUALANG_API_KEY=el_your_key`）。环境变量里没有密钥时，服务器会读这个文件，Equalang 技能也读它——这样客户端配置里就不必写 `env`。
+密钥也可以在每台机器上只存一次，放进 `~/.config/equalang/.env`（Equalang 技能也读这个文件）：
+
+```bash
+# 把 el_your_key 换成你的密钥
+mkdir -p ~/.config/equalang && echo 'EQUALANG_API_KEY=el_your_key' > ~/.config/equalang/.env && chmod 600 ~/.config/equalang/.env
+```
+
+服务器先看自己的环境变量里有没有 `EQUALANG_API_KEY`，没有才读这个文件：客户端配置里写了密钥就以它为准；有了这个文件，客户端配置里就不必再写 `env`。
 
 ## 安装
 

@@ -42,7 +42,14 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 يوضع المفتاح في متغير بيئة ضمن إعدادات عميل MCP، ولا يوضع في رابط URL أبدًا. من دون مفتاح يعمل الخادم مع ذلك ويعرض أدواته؛ والأداة التي تحتاج إلى المفتاح تجيب بطريقة الحصول عليه.
 
-ويمكن أيضًا حفظ المفتاح مرة واحدة لكل جهاز في `~/.config/equalang/.env` بصيغة `EQUALANG_API_KEY=el_your_key`: يقرأ الخادم هذا الملف حين لا يجد مفتاحًا في بيئته، وكذلك تفعل مهارة Equalang - وعندها لا تحتاج إعدادات العميل إلى `env`.
+ويمكن أيضًا حفظ المفتاح مرة واحدة لكل جهاز في `~/.config/equalang/.env`، وهو الملف الذي تقرؤه مهارة Equalang أيضًا:
+
+```bash
+# استبدل el_your_key بمفتاحك
+mkdir -p ~/.config/equalang && echo 'EQUALANG_API_KEY=el_your_key' > ~/.config/equalang/.env && chmod 600 ~/.config/equalang/.env
+```
+
+يأخذ الخادم `EQUALANG_API_KEY` من بيئته أولًا، ولا يقرأ الملف إلا إذا لم يجده فيها: المفتاح الموجود في إعدادات العميل له الأولوية، ومع وجود الملف لا تحتاج إعدادات العميل إلى `env`.
 
 ## التثبيت
 

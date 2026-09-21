@@ -42,7 +42,14 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 Khóa được đặt trong một biến môi trường ở cấu hình của client MCP, không bao giờ nằm trong URL. Không có khóa, máy chủ vẫn khởi động và liệt kê các công cụ; công cụ nào cần khóa sẽ trả lời bằng cách lấy khóa.
 
-Khóa cũng có thể được lưu một lần cho mỗi máy, trong `~/.config/equalang/.env` dưới dạng `EQUALANG_API_KEY=el_your_key`: máy chủ đọc tệp này khi biến môi trường không có khóa, skill của Equalang cũng vậy - khi đó cấu hình client không cần `env` nữa.
+Khóa cũng có thể được lưu một lần cho mỗi máy, trong `~/.config/equalang/.env` — tệp mà skill của Equalang cũng đọc:
+
+```bash
+# Thay el_your_key bằng khóa của bạn
+mkdir -p ~/.config/equalang && echo 'EQUALANG_API_KEY=el_your_key' > ~/.config/equalang/.env && chmod 600 ~/.config/equalang/.env
+```
+
+Máy chủ lấy `EQUALANG_API_KEY` từ biến môi trường của nó trước, chỉ đọc tệp này khi ở đó không có: khóa trong cấu hình client được ưu tiên, và khi đã có tệp thì cấu hình client không cần `env`.
 
 ## Cài đặt
 

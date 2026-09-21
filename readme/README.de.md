@@ -42,7 +42,14 @@ Registriere dich unter <https://equalang.com> und erstelle einen Schlüssel unte
 
 Der Schlüssel gehört in eine Umgebungsvariable in der Konfiguration des MCP-Clients, nie in eine URL. Ohne Schlüssel startet der Server trotzdem und listet seine Tools auf; ein Tool, das den Schlüssel braucht, antwortet mit dem Hinweis, wie man einen bekommt.
 
-Der Schlüssel kann auch einmal pro Rechner in `~/.config/equalang/.env` liegen, als `EQUALANG_API_KEY=el_your_key`: Der Server liest diese Datei, wenn seine Umgebung keinen Schlüssel enthält, und der Equalang-Skill ebenso – die Client-Konfiguration braucht dann kein `env`.
+Der Schlüssel kann auch einmal pro Rechner in `~/.config/equalang/.env` liegen, die auch der Equalang-Skill liest:
+
+```bash
+# Ersetze el_your_key durch deinen Schlüssel
+mkdir -p ~/.config/equalang && echo 'EQUALANG_API_KEY=el_your_key' > ~/.config/equalang/.env && chmod 600 ~/.config/equalang/.env
+```
+
+Der Server nimmt `EQUALANG_API_KEY` zuerst aus seiner Umgebung und liest die Datei nur, wenn dort keiner steht: Ein Schlüssel in der Client-Konfiguration hat Vorrang, und mit der Datei braucht die Client-Konfiguration kein `env`.
 
 ## Installation
 

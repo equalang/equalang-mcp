@@ -42,7 +42,14 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 키는 MCP 클라이언트 설정의 환경 변수에 넣고, URL에는 절대 넣지 마세요. 키가 없어도 서버는 시작되고 도구 목록을 보여 줍니다. 키가 필요한 도구는 키를 받는 방법을 알려 주는 것으로 응답합니다.
 
-키는 기기마다 한 번 `~/.config/equalang/.env`에 `EQUALANG_API_KEY=el_your_key` 형식으로 저장해 둘 수도 있습니다. 환경 변수에 키가 없으면 서버가 이 파일을 읽고, Equalang 스킬도 같은 파일을 읽습니다. 이 경우 클라이언트 설정에 `env`가 필요 없습니다.
+키는 기기마다 한 번 `~/.config/equalang/.env`에 저장해 둘 수도 있습니다(Equalang 스킬도 같은 파일을 읽습니다).
+
+```bash
+# el_your_key를 본인의 키로 바꾸세요
+mkdir -p ~/.config/equalang && echo 'EQUALANG_API_KEY=el_your_key' > ~/.config/equalang/.env && chmod 600 ~/.config/equalang/.env
+```
+
+서버는 먼저 환경 변수 `EQUALANG_API_KEY`를 확인하고, 없을 때만 이 파일을 읽습니다. 클라이언트 설정에 키가 있으면 그것이 우선하고, 이 파일이 있으면 클라이언트 설정에 `env`가 필요 없습니다.
 
 ## 설치
 

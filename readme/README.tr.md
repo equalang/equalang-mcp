@@ -42,7 +42,14 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 Anahtar, MCP istemcisinin yapılandırmasındaki bir ortam değişkenine yazılır, asla bir URL'ye değil. Anahtar olmadan da sunucu başlar ve araçlarını listeler; anahtar gerektiren bir araç, anahtarın nasıl alınacağını söyleyerek yanıt verir.
 
-Anahtar makine başına bir kez `~/.config/equalang/.env` dosyasında `EQUALANG_API_KEY=el_your_key` olarak da tutulabilir: ortamında anahtar olmadığında sunucu bu dosyayı okur, Equalang becerisi de aynı dosyayı okur; bu durumda istemci yapılandırmasında `env` gerekmez.
+Anahtar, makine başına bir kez `~/.config/equalang/.env` dosyasında da tutulabilir; Equalang becerisi de bu dosyayı okur:
+
+```bash
+# el_your_key yerine kendi anahtarınızı yazın
+mkdir -p ~/.config/equalang && echo 'EQUALANG_API_KEY=el_your_key' > ~/.config/equalang/.env && chmod 600 ~/.config/equalang/.env
+```
+
+Sunucu `EQUALANG_API_KEY` değerini önce kendi ortamından alır, dosyayı yalnızca orada yoksa okur: istemci yapılandırmasındaki anahtar önceliklidir, dosya varken istemci yapılandırmasında `env` gerekmez.
 
 ## Kurulum
 
