@@ -139,8 +139,8 @@ export class Equalang {
 
       const code = payload?.code ?? `HTTP_${response.status}`;
       let message = payload?.message ?? response.statusText;
-      if (response.status === 401) message += ` Check EQUALANG_API_KEY, or create a key at ${KEYS_URL}.`;
-      if (response.status === 402) message += ` Top up at ${PRICING_URL}.`;
+      if (response.status === 401) message = `${message.replace(/[. ]+$/, '')}. Check EQUALANG_API_KEY, or create a key at ${KEYS_URL}.`;
+      if (response.status === 402) message = `${message.replace(/[. ]+$/, '')}. Top up at ${PRICING_URL}.`;
       failure = new EqualangError(
         message, code, payload?.retryable ?? response.status >= 500,
         (payload?.data as Record<string, unknown> | null) ?? null);
