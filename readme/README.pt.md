@@ -17,6 +17,17 @@
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
 ```
 
+## Experimente pedir
+
+- “Traduza ~/Documents/contract.pdf para o português, mantendo o layout.”
+- “Traduza pitch-deck.pptx para o inglês e o espanhol.”
+- “Traduza https://example.com/whitepaper.pdf para o português e salve em ~/Downloads.”
+- “Quanto custaria traduzir thesis.docx para o inglês?”
+- “Faça legendas em português para interview.mp4, com a linha original acima de cada tradução.”
+- “Transcreva standup.m4a com marcações de tempo.”
+- “Traduza para o português o texto de menu.jpg.”
+- “Traduza os textos de locales/en.json para espanhol, francês e alemão.”
+
 ## Recursos
 
 - **Documentos**: PDF, DOCX, PPTX, XLSX, EPUB, HTML e TXT voltam no mesmo formato, ainda editáveis, com tabelas, imagens, fórmulas e layout de página no lugar

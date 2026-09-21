@@ -17,6 +17,17 @@
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
 ```
 
+## 이렇게 말해 보세요
+
+- “~/Documents/contract.pdf를 한국어로 번역해 줘. 레이아웃은 그대로.”
+- “pitch-deck.pptx를 영어와 일본어로 번역해 줘.”
+- “https://example.com/whitepaper.pdf를 한국어로 번역해서 ~/Downloads에 저장해 줘.”
+- “thesis.docx를 영어로 번역하면 비용이 얼마나 들어?”
+- “interview.mp4에 한국어 자막을 만들어 줘. 각 줄 위에 원문도 남겨 줘.”
+- “standup.m4a를 타임스탬프와 함께 받아 적어 줘.”
+- “menu.jpg에 있는 글자를 한국어로 번역해 줘.”
+- “locales/en.json의 문구를 일본어, 중국어, 스페인어로 번역해 줘.”
+
 ## 기능
 
 - **문서** - PDF, DOCX, PPTX, XLSX, EPUB, HTML, TXT는 같은 형식으로, 편집 가능한 상태로 돌아오며 표와 이미지, 수식, 페이지 레이아웃이 제자리에 남습니다

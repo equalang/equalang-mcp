@@ -17,6 +17,17 @@
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
 ```
 
+## 试试这样说
+
+- “把 ~/Documents/contract.pdf 翻译成中文，排版保持不变。”
+- “把 pitch-deck.pptx 翻译成英文和日文。”
+- “把 https://example.com/whitepaper.pdf 翻译成中文，存到 ~/Downloads。”
+- “把 thesis.docx 翻译成英文，大概要花多少积分？”
+- “给 interview.mp4 做中文字幕，每句上面保留原文。”
+- “把 standup.m4a 转成带时间戳的文字稿。”
+- “把 menu.jpg 里的文字翻译成中文。”
+- “把 locales/en.json 里的文案翻译成日文、韩文和西班牙文。”
+
 ## 功能
 
 - **文档**：PDF、DOCX、PPTX、XLSX、EPUB、HTML 和 TXT 译完仍是原格式，依然可编辑，表格、图片、公式和页面版式都在原位

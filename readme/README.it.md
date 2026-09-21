@@ -17,6 +17,17 @@
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
 ```
 
+## Prova a chiedere
+
+- «Traduci ~/Documents/contract.pdf in italiano mantenendo l'impaginazione.»
+- «Traduci pitch-deck.pptx in inglese e in tedesco.»
+- «Traduci https://example.com/whitepaper.pdf in italiano e salvalo in ~/Downloads.»
+- «Quanto costerebbe tradurre thesis.docx in inglese?»
+- «Crea i sottotitoli in italiano per interview.mp4, con la riga originale sopra ogni traduzione.»
+- «Trascrivi standup.m4a con i timestamp.»
+- «Traduci in italiano il testo di menu.jpg.»
+- «Traduci le stringhe di locales/en.json in francese, spagnolo e tedesco.»
+
 ## Funzionalità
 
 - **Documenti** – PDF, DOCX, PPTX, XLSX, EPUB, HTML e TXT tornano nello stesso formato, ancora modificabili, con tabelle, immagini, formule e impaginazione al loro posto

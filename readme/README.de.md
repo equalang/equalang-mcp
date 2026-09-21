@@ -17,6 +17,17 @@
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
 ```
 
+## Beispielanfragen
+
+- „Übersetze ~/Documents/contract.pdf ins Deutsche und behalte das Layout bei.“
+- „Übersetze pitch-deck.pptx ins Englische und Französische.“
+- „Übersetze https://example.com/whitepaper.pdf ins Deutsche und speichere es in ~/Downloads.“
+- „Was würde es kosten, thesis.docx ins Englische zu übersetzen?“
+- „Erstelle deutsche Untertitel für interview.mp4, mit der Originalzeile über jeder Übersetzung.“
+- „Transkribiere standup.m4a mit Zeitstempeln.“
+- „Übersetze den Text in menu.jpg ins Deutsche.“
+- „Übersetze die Texte in locales/en.json ins Französische, Spanische und Italienische.“
+
 ## Funktionen
 
 - **Dokumente** – PDF, DOCX, PPTX, XLSX, EPUB, HTML und TXT kommen im selben Format zurück, weiterhin bearbeitbar, Tabellen, Bilder, Formeln und Seitenlayout an ihrem Platz

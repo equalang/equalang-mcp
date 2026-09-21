@@ -17,6 +17,17 @@
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
 ```
 
+## Thử nói thế này
+
+- “Dịch ~/Documents/contract.pdf sang tiếng Việt, giữ nguyên bố cục.”
+- “Dịch pitch-deck.pptx sang tiếng Anh và tiếng Nhật.”
+- “Dịch https://example.com/whitepaper.pdf sang tiếng Việt rồi lưu vào ~/Downloads.”
+- “Dịch thesis.docx sang tiếng Anh thì tốn bao nhiêu?”
+- “Làm phụ đề tiếng Việt cho interview.mp4, giữ dòng gốc phía trên mỗi dòng dịch.”
+- “Chép lời standup.m4a kèm mốc thời gian.”
+- “Dịch chữ trong menu.jpg sang tiếng Việt.”
+- “Dịch các chuỗi trong locales/en.json sang tiếng Hàn, tiếng Nhật và tiếng Thái.”
+
 ## Tính năng
 
 - **Tài liệu** - PDF, DOCX, PPTX, XLSX, EPUB, HTML và TXT trả về đúng định dạng cũ, vẫn chỉnh sửa được, bảng, hình ảnh, công thức và bố cục trang giữ nguyên

@@ -17,6 +17,17 @@
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
 ```
 
+## Şöyle isteyebilirsiniz
+
+- “~/Documents/contract.pdf dosyasını Türkçeye çevir, sayfa düzeni aynı kalsın.”
+- “pitch-deck.pptx dosyasını İngilizceye ve Almancaya çevir.”
+- “https://example.com/whitepaper.pdf dosyasını Türkçeye çevirip ~/Downloads içine kaydet.”
+- “thesis.docx dosyasını İngilizceye çevirmek ne kadar tutar?”
+- “interview.mp4 için Türkçe altyazı hazırla; her satırın üstünde orijinali kalsın.”
+- “standup.m4a kaydını zaman damgalarıyla yazıya dök.”
+- “menu.jpg içindeki yazıyı Türkçeye çevir.”
+- “locales/en.json içindeki metinleri Almancaya, Fransızcaya ve Arapçaya çevir.”
+
 ## Özellikler
 
 - **Belgeler** – PDF, DOCX, PPTX, XLSX, EPUB, HTML ve TXT aynı biçimde, düzenlenebilir halde geri gelir; tablolar, görseller, formüller ve sayfa düzeni yerinde kalır

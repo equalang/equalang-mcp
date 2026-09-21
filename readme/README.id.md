@@ -17,6 +17,17 @@
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
 ```
 
+## Coba minta
+
+- “Terjemahkan ~/Documents/contract.pdf ke bahasa Indonesia, tata letaknya jangan berubah.”
+- “Terjemahkan pitch-deck.pptx ke bahasa Inggris dan Jepang.”
+- “Terjemahkan https://example.com/whitepaper.pdf ke bahasa Indonesia dan simpan di ~/Downloads.”
+- “Berapa biaya menerjemahkan thesis.docx ke bahasa Inggris?”
+- “Buatkan subtitle bahasa Indonesia untuk interview.mp4, dengan baris aslinya di atas setiap terjemahan.”
+- “Transkripsikan standup.m4a lengkap dengan stempel waktu.”
+- “Terjemahkan teks di menu.jpg ke bahasa Indonesia.”
+- “Terjemahkan string di locales/en.json ke bahasa Melayu, Thai, dan Vietnam.”
+
 ## Fitur
 
 - **Dokumen** - PDF, DOCX, PPTX, XLSX, EPUB, HTML, dan TXT kembali dalam format yang sama, tetap bisa diedit, dengan tabel, gambar, rumus, dan tata letak halaman tetap di tempatnya

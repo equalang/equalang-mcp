@@ -17,6 +17,17 @@
 claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equalang/mcp
 ```
 
+## جرّب أن تطلب
+
+- «ترجم ~/Documents/contract.pdf إلى العربية مع الحفاظ على التنسيق.»
+- «ترجم pitch-deck.pptx إلى الإنجليزية والفرنسية.»
+- «ترجم https://example.com/whitepaper.pdf إلى العربية واحفظه في ~/Downloads.»
+- «كم ستكلّف ترجمة thesis.docx إلى الإنجليزية؟»
+- «اصنع ترجمة مصاحبة عربية لـ interview.mp4، مع إبقاء السطر الأصلي فوق كل سطر.»
+- «حوّل standup.m4a إلى نص مكتوب مع الطوابع الزمنية.»
+- «ترجم النص الموجود في menu.jpg إلى العربية.»
+- «ترجم النصوص في locales/en.json إلى الفرنسية والألمانية والإسبانية.»
+
 ## المزايا
 
 - **المستندات** - PDF وDOCX وPPTX وXLSX وEPUB وHTML وTXT تعود بالصيغة نفسها، قابلة للتحرير كما كانت، والجداول والصور والمعادلات وتخطيط الصفحة في أماكنها
