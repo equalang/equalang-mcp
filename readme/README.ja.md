@@ -31,6 +31,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 キーは MCP クライアントの設定の環境変数に入れます。URL には決して入れないでください。キーがなくてもサーバーは起動し、ツール一覧を返します。キーが必要なツールは、キーの取得方法を答えます。
 
+キーはマシンごとに一度、`~/.config/equalang/.env` に `EQUALANG_API_KEY=el_your_key` として保存しておくこともできます。環境変数にキーがないとき、サーバーはこのファイルを読み、Equalang スキルも同じファイルを読みます。その場合、クライアント設定に `env` は不要です。
+
 ## インストール
 
 Node 18 以降が必要です。

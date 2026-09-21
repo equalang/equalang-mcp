@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { readFile, stat } from 'node:fs/promises';
 import { basename } from 'node:path';
 
+import { CONFIG_FILE, setting } from './config.js';
+
 /**
  * The Equalang API, as a client needs it. Nothing here knows about MCP.
  *
@@ -86,10 +88,15 @@ function chosen(options: Record<string, unknown> | undefined): Record<string, un
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export class Equalang {
-  readonly baseUrl: string;
+  /** Given explicitly, or else looked up at each use: the environment, then the config file. */
+  constructor(private readonly key?: string, private readonly base?: string) {}
 
-  constructor(private readonly apiKey: string | undefined, baseUrl?: string) {
-    this.baseUrl = (baseUrl ?? process.env.EQUALANG_BASE_URL ?? DEFAULT_BASE_URL).replace(/\/$/, '');
+  private get apiKey(): string | undefined {
+    return this.key ?? setting('EQUALANG_API_KEY');
+  }
+
+  get baseUrl(): string {
+    return (this.base ?? setting('EQUALANG_BASE_URL') ?? DEFAULT_BASE_URL).replace(/\/$/, '');
   }
 
   /**
@@ -107,15 +114,17 @@ export class Equalang {
     body?: () => BodyInit,
     init: { json?: boolean; creates?: boolean; keyless?: boolean } = {},
   ): Promise<{ data: T; headers: Headers }> {
-    if (!init.keyless && !this.apiKey) {
+    const apiKey = this.apiKey;
+    if (!init.keyless && !apiKey) {
       throw new EqualangError(
-        `EQUALANG_API_KEY is not set. Ask the user for a key, or to create one at ${KEYS_URL}, ` +
-          'then set it in the MCP client config: "env": { "EQUALANG_API_KEY": "el_..." }. Never invent a key.',
+        `EQUALANG_API_KEY is not set. Ask the user for a key, or to create one at ${KEYS_URL}; then save it as the line ` +
+          `EQUALANG_API_KEY=el_... in ${CONFIG_FILE}, or set it in the MCP client config: "env": { "EQUALANG_API_KEY": "el_..." }. ` +
+          'Never invent a key.',
         'MISSING_API_KEY',
       );
     }
     const headers: Record<string, string> = { 'User-Agent': `equalang-mcp/${VERSION}` };
-    if (!init.keyless) headers.Authorization = `Bearer ${this.apiKey}`;
+    if (!init.keyless) headers.Authorization = `Bearer ${apiKey}`;
     if (init.json) headers['Content-Type'] = 'application/json';
     if (init.creates) headers['Idempotency-Key'] = randomUUID();
 

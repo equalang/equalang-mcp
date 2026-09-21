@@ -11,6 +11,7 @@ import type { ServerNotification, ServerRequest } from '@modelcontextprotocol/sd
 import { z } from 'zod';
 
 import { Equalang, EqualangError, SITE, VERSION, type Job, type Source } from './api.js';
+import { CONFIG_FILE, setting } from './config.js';
 
 /*
  * Equalang as tools an agent can call.
@@ -38,12 +39,12 @@ import { Equalang, EqualangError, SITE, VERSION, type Job, type Source } from '.
 const DEFAULT_WAIT_SECONDS = 50;
 const MAX_WAIT_SECONDS = 240;
 
-const api = new Equalang(process.env.EQUALANG_API_KEY?.trim() || undefined);
-if (!process.env.EQUALANG_API_KEY?.trim()) {
+const api = new Equalang();
+if (!setting('EQUALANG_API_KEY')) {
   // The key is a credential for the API, not a precondition of this process:
   // a keyless server still answers initialize and tools/list, which is how
   // clients and directories inspect it. stderr, because stdout is the protocol.
-  console.error('equalang-mcp: EQUALANG_API_KEY is not set; tools that need it will answer with how to get one.');
+  console.error(`equalang-mcp: EQUALANG_API_KEY is not set, in the environment or in ${CONFIG_FILE}; tools that need it will answer with how to get one.`);
 }
 
 // Where the results of a job still running when its call returned belong:

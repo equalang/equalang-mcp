@@ -31,6 +31,8 @@ Daftar di <https://equalang.com> dan buat kunci di <https://equalang.com/api-key
 
 Kunci ditaruh di variabel lingkungan pada konfigurasi klien MCP, tidak pernah di dalam URL. Tanpa kunci, server tetap berjalan dan menampilkan daftar tool-nya; tool yang membutuhkan kunci akan menjawab dengan cara mendapatkannya.
 
+Kunci juga bisa disimpan sekali per mesin, di `~/.config/equalang/.env` sebagai `EQUALANG_API_KEY=el_your_key`: server membaca file itu bila environment-nya tidak berisi kunci, begitu pula skill Equalang - konfigurasi klien pun tidak perlu `env`.
+
 ## Instalasi
 
 Membutuhkan Node 18 atau lebih baru.

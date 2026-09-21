@@ -31,6 +31,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 Khóa được đặt trong một biến môi trường ở cấu hình của client MCP, không bao giờ nằm trong URL. Không có khóa, máy chủ vẫn khởi động và liệt kê các công cụ; công cụ nào cần khóa sẽ trả lời bằng cách lấy khóa.
 
+Khóa cũng có thể được lưu một lần cho mỗi máy, trong `~/.config/equalang/.env` dưới dạng `EQUALANG_API_KEY=el_your_key`: máy chủ đọc tệp này khi biến môi trường không có khóa, skill của Equalang cũng vậy - khi đó cấu hình client không cần `env` nữa.
+
 ## Cài đặt
 
 Cần Node 18 trở lên.

@@ -31,6 +31,8 @@ Sign up at <https://equalang.com> and create a key at <https://equalang.com/api-
 
 The key goes in an environment variable of the MCP client's config, never in a URL. Without a key the server still starts and lists its tools; a tool that needs the key answers with how to get one.
 
+The key can also live once per machine, in `~/.config/equalang/.env` as `EQUALANG_API_KEY=el_your_key`: the server reads that file when its environment has no key, and so does the Equalang skill - the client config then needs no `env`.
+
 ## Install
 
 Needs Node 18 or later.

@@ -10,55 +10,73 @@
  *   EQUALANG_API_KEY=el_... node selftest.mjs file.txt recording.mp3
  */
 import { spawn } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 
 const [documentPath, recordingPath] = process.argv.slice(2).map((path) => resolve(path));
 const keyed = Boolean(process.env.EQUALANG_API_KEY);
+const INITIALIZE = { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'selftest', version: '1' } };
 
-const child = spawn('node', ['dist/index.js'], { stdio: ['pipe', 'pipe', 'pipe'], env: process.env });
-let stderr = '';
-child.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
-
-let buffer = '';
-let strays = 0;
-const pending = new Map();
-const progress = [];
-child.stdout.on('data', (chunk) => {
-  buffer += chunk.toString();
-  let newline;
-  while ((newline = buffer.indexOf('\n')) >= 0) {
-    const line = buffer.slice(0, newline).trim();
-    buffer = buffer.slice(newline + 1);
-    if (!line) continue;
-    let message;
-    try {
-      message = JSON.parse(line);
-    } catch {
-      strays += 1;  // a stray console.log on stdout breaks every client
-      continue;
-    }
-    if (message.method === 'notifications/progress') progress.push(message.params);
-    pending.get(message.id)?.(message);
-    pending.delete(message.id);
+/**
+ * One server, spoken to over stdio. Its config directory is always a fresh
+ * one -- holding `config` as its settings file, if given -- so whether a run
+ * has a key is decided by EQUALANG_API_KEY above, not by whatever the machine
+ * running it keeps in ~/.config/equalang.
+ */
+function serve(env = {}, config) {
+  const home = mkdtempSync(join(tmpdir(), 'equalang-selftest-'));
+  const settingsFile = join(home, 'equalang', '.env');
+  if (config !== undefined) {
+    mkdirSync(join(home, 'equalang'));
+    writeFileSync(settingsFile, config);
   }
-});
+  const child = spawn('node', ['dist/index.js'], { stdio: ['pipe', 'pipe', 'pipe'], env: { ...process.env, XDG_CONFIG_HOME: home, ...env } });
+  const server = { home, settingsFile, stderr: '', buffer: '', strays: 0, progress: [], kill: () => child.kill() };
+  child.stderr.on('data', (chunk) => { server.stderr += chunk.toString(); });
 
-let nextId = 1;
-function call(method, params, timeoutMs = 300_000) {
-  const id = nextId++;
-  child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id, method, params })}\n`);
-  return new Promise((done, fail) => {
-    const timer = setTimeout(() => fail(new Error(`${method} timed out`)), timeoutMs);
-    pending.set(id, (message) => { clearTimeout(timer); done(message); });
+  const pending = new Map();
+  child.stdout.on('data', (chunk) => {
+    server.buffer += chunk.toString();
+    let newline;
+    while ((newline = server.buffer.indexOf('\n')) >= 0) {
+      const line = server.buffer.slice(0, newline).trim();
+      server.buffer = server.buffer.slice(newline + 1);
+      if (!line) continue;
+      let message;
+      try {
+        message = JSON.parse(line);
+      } catch {
+        server.strays += 1;  // a stray console.log on stdout breaks every client
+        continue;
+      }
+      if (message.method === 'notifications/progress') server.progress.push(message.params);
+      pending.get(message.id)?.(message);
+      pending.delete(message.id);
+    }
   });
+
+  server.notify = (method) => child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', method })}\n`);
+  let nextId = 1;
+  server.call = (method, params, timeoutMs = 300_000) => {
+    const id = nextId++;
+    child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', id, method, params })}\n`);
+    return new Promise((done, fail) => {
+      const timer = setTimeout(() => fail(new Error(`${method} timed out`)), timeoutMs);
+      pending.set(id, (message) => { clearTimeout(timer); done(message); });
+    });
+  };
+  server.tool = async (name, args, progressToken) => {
+    const response = await server.call('tools/call', { name, arguments: args, ...(progressToken ? { _meta: { progressToken } } : {}) });
+    let payload;
+    try { payload = JSON.parse(response.result?.content?.[0]?.text ?? ''); } catch { payload = {}; }
+    return { isError: response.result?.isError === true, payload, result: response.result };
+  };
+  return server;
 }
-const tool = async (name, args, progressToken) => {
-  const response = await call('tools/call', { name, arguments: args, ...(progressToken ? { _meta: { progressToken } } : {}) });
-  let payload;
-  try { payload = JSON.parse(response.result?.content?.[0]?.text ?? ''); } catch { payload = {}; }
-  return { isError: response.result?.isError === true, payload, result: response.result };
-};
+
+const main = serve();
+const { call, tool, progress } = main;
 
 let failures = 0;
 function check(label, ok, detail = '') {
@@ -67,12 +85,12 @@ function check(label, ok, detail = '') {
 }
 
 console.log('== protocol');
-const initialized = await call('initialize', { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'selftest', version: '1' } });
+const initialized = await call('initialize', INITIALIZE);
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 check('answers initialize as equalang, at the published version',
   initialized.result?.serverInfo?.name === 'equalang' && initialized.result?.serverInfo?.version === version, JSON.stringify(initialized.result?.serverInfo));
 check('tells the model, once, what is true of every tool', /estimate_cost/.test(initialized.result?.instructions ?? '') && /never with file contents/.test(initialized.result.instructions));
-child.stdin.write(`${JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' })}\n`);
+main.notify('notifications/initialized');
 
 const tools = (await call('tools/list', {})).result?.tools ?? [];
 const expected = ['translate_file', 'transcribe_recording', 'translate_text', 'estimate_cost', 'check_job', 'cancel_job', 'get_credit_balance', 'list_languages'];
@@ -90,6 +108,32 @@ const relative = await tool('translate_file', { source: 'report.pdf', target_lan
 check('a relative path is refused with a reason, before anything is sent', relative.isError && relative.payload.code === 'INVALID_SOURCE');
 const both = await tool('translate_file', { source: '/tmp/a.pdf', file_id: 'x', target_language: 'ja' });
 check('source and file_id together are refused', both.isError && both.payload.code === 'INVALID_SOURCE');
+
+// One key per machine, in the user's config file: the skill reads the same one.
+// A made-up key answered with UNAUTHORIZED proves it was read and sent.
+console.log("\n== the key's one home");
+{
+  const later = serve({ EQUALANG_API_KEY: '' });
+  await later.call('initialize', INITIALIZE);
+  const before = await later.tool('get_credit_balance', {});
+  check('with no key anywhere, the answer names the file one goes in',
+    before.payload.code === 'MISSING_API_KEY' && before.payload.error?.includes(later.settingsFile), before.payload.error);
+  mkdirSync(join(later.home, 'equalang'));
+  writeFileSync(later.settingsFile, '# saved by hand\nexport EQUALANG_API_KEY="el_selftest_made_up"\n');
+  const after = await later.tool('get_credit_balance', {});
+  check('a key saved there after the server started is used, without a restart', after.payload.code === 'UNAUTHORIZED', JSON.stringify(after.payload));
+  later.kill();
+
+  const configured = serve(
+    { EQUALANG_API_KEY: '', EQUALANG_BASE_URL: process.env.EQUALANG_BASE_URL || 'https://equalang.com/v1' },
+    'EQUALANG_API_KEY=el_selftest_made_up\nEQUALANG_BASE_URL=https://nonexistent.invalid/v1\n');
+  await configured.call('initialize', INITIALIZE);
+  const answer = await configured.tool('get_credit_balance', {});
+  // NETWORK here would mean the file's address was used over the environment's.
+  check('the environment wins over the file', answer.payload.code === 'UNAUTHORIZED', JSON.stringify(answer.payload));
+  check('a key in the file needs no missing-key notice', configured.stderr === '', configured.stderr);
+  configured.kill();
+}
 
 if (!keyed) {
   const balance = await tool('get_credit_balance', {});
@@ -142,9 +186,9 @@ if (!keyed) {
 }
 
 console.log('\n== stdout hygiene');
-check('nothing but JSON-RPC was written to stdout', strays === 0 && buffer.trim() === '');
-check('stderr carries at most the missing-key notice', keyed ? stderr === '' : /EQUALANG_API_KEY is not set/.test(stderr) && stderr.trim().split('\n').length === 1, stderr.slice(0, 200));
+check('nothing but JSON-RPC was written to stdout', main.strays === 0 && main.buffer.trim() === '');
+check('stderr carries at most the missing-key notice', keyed ? main.stderr === '' : /EQUALANG_API_KEY is not set/.test(main.stderr) && main.stderr.trim().split('\n').length === 1, main.stderr.slice(0, 200));
 
-child.kill();
+main.kill();
 console.log(failures ? `\n${failures} FAILURES` : '\nAll checks passed.');
 process.exit(failures ? 1 : 0);

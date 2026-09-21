@@ -3,12 +3,12 @@
   "name": "io.github.equalang/equalang-mcp",
   "description": "Translate documents, subtitles, pictures, audio and video with layout kept; transcribe recordings.",
   "repository": { "url": "https://github.com/equalang/equalang-mcp", "source": "github" },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@equalang/mcp",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "transport": { "type": "stdio" },
       "environmentVariables": [
         {

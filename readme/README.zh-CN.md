@@ -31,6 +31,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 
 密钥放在 MCP 客户端配置的环境变量里，绝不要放进 URL。没有密钥时服务器照常启动并列出工具；需要密钥的工具会告诉你如何获取。
 
+密钥也可以在每台机器上只存一次：写进 `~/.config/equalang/.env`（`EQUALANG_API_KEY=el_your_key`）。环境变量里没有密钥时，服务器会读这个文件，Equalang 技能也读它——这样客户端配置里就不必写 `env`。
+
 ## 安装
 
 需要 Node 18 或更高版本。
