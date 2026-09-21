@@ -5,7 +5,7 @@
   "description": "MCP server for Equalang: translate documents, slides, spreadsheets, e-books, subtitles, pictures, audio and video with their layout kept, transcribe recordings, and translate text.",
   "type": "module",
   "bin": {
-    "equalang-mcp": "./dist/index.js"
+    "equalang-mcp": "dist/index.js"
   },
   "main": "./dist/index.js",
   "files": [
