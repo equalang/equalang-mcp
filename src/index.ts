@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { mkdir, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { basename, dirname, extname, isAbsolute, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -113,13 +113,22 @@ function destinationOf(source: Source, outputDir: string | undefined): string | 
   return 'fileId' in source ? destinations.get(source.fileId) : undefined;
 }
 
-/** A name that is free in `directory`: a result never overwrites what is already there. */
-async function freeName(directory: string, filename: string): Promise<string> {
+/**
+ * Write a result so that it overwrites nothing and is not written twice. A
+ * taken name gets ` (1)`; but a file already holding exactly these bytes is
+ * this result, saved by an earlier look at the same job, and is named instead.
+ */
+async function save(directory: string, filename: string, content: Buffer): Promise<string> {
   const extension = extname(filename);
   const stem = filename.slice(0, filename.length - extension.length);
   for (let n = 0; ; n++) {
     const candidate = join(directory, n === 0 ? filename : `${stem} (${n})${extension}`);
-    if (!(await stat(candidate).then(() => true, () => false))) return candidate;
+    const size = await stat(candidate).then((found) => found.size, () => -1);
+    if (size < 0) {
+      await writeFile(candidate, content);
+      return candidate;
+    }
+    if (size === content.length && (await readFile(candidate)).equals(content)) return candidate;
   }
 }
 
@@ -159,8 +168,7 @@ async function report(job: Job, destination: string | undefined) {
   const saved = [];
   for (const output of job.outputs) {
     // The name is the API's; only its last component is trusted with a path on this machine.
-    const path = await freeName(destination, basename(output.filename));
-    await writeFile(path, await api.fetchOutput(output));
+    const path = await save(destination, basename(output.filename), await api.fetchOutput(output));
     saved.push({ kind: output.kind, format: output.format, path });
   }
   destinations.delete(job.job_id);

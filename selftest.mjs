@@ -127,6 +127,9 @@ if (!keyed) {
     check('a client that asked for progress was told how the job went', progress.some((p) => p.progressToken === 'selftest-progress' && typeof p.progress === 'number'), JSON.stringify(progress.slice(-2)));
     const again = await tool('check_job', { job_id: translated.payload.job_id });
     check('check_job on a job already collected answers with links, and writes nothing twice', again.payload.finished === true && again.payload.outputs?.[0]?.download_url && !again.payload.outputs[0].path);
+    const saved = await tool('check_job', { job_id: translated.payload.job_id, output_dir: resolve(documentPath, '..') });
+    check('saving a collected job again names the file already there instead of copying it',
+      saved.payload.outputs?.map((o) => o.path).join() === translated.payload.outputs?.map((o) => o.path).join(), JSON.stringify(saved.payload.outputs));
     const cancelled = await tool('cancel_job', { job_id: translated.payload.job_id });
     check('cancelling a finished job leaves it as it is', !cancelled.isError && cancelled.payload.status === 'SUCCEEDED');
   }
