@@ -25,8 +25,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - "How much would it cost to translate thesis.docx into French?"
 - "Make Korean subtitles for interview.mp4, with the original line above each one."
 - "Transcribe standup.m4a with timestamps."
-- "Translate the text in menu.jpg into English."
-- "Translate the strings in locales/en.json into French, German and Spanish."
+- "Make an English version of menu.jpg."
+- "Translate novel.epub into English."
 
 ## Features
 

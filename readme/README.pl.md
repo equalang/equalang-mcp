@@ -25,8 +25,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - „Ile kosztowałoby przetłumaczenie thesis.docx na angielski?”
 - „Zrób polskie napisy do interview.mp4, z oryginalną linią nad każdym tłumaczeniem.”
 - „Zrób transkrypcję standup.m4a ze znacznikami czasu.”
-- „Przetłumacz na polski tekst z menu.jpg.”
-- „Przetłumacz teksty z locales/en.json na niemiecki, czeski i ukraiński.”
+- „Zrób polską wersję menu.jpg.”
+- „Przetłumacz novel.epub na polski.”
 
 ## Funkcje
 

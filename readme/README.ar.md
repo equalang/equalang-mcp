@@ -25,8 +25,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - «كم ستكلّف ترجمة thesis.docx إلى الإنجليزية؟»
 - «اصنع ترجمة مصاحبة عربية لـ interview.mp4، مع إبقاء السطر الأصلي فوق كل سطر.»
 - «حوّل standup.m4a إلى نص مكتوب مع الطوابع الزمنية.»
-- «ترجم النص الموجود في menu.jpg إلى العربية.»
-- «ترجم النصوص في locales/en.json إلى الفرنسية والألمانية والإسبانية.»
+- «اصنع نسخة عربية من صورة menu.jpg.»
+- «ترجم novel.epub إلى العربية.»
 
 ## المزايا
 

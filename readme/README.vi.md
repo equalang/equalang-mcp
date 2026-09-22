@@ -25,8 +25,8 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - “Dịch thesis.docx sang tiếng Anh thì tốn bao nhiêu?”
 - “Làm phụ đề tiếng Việt cho interview.mp4, giữ dòng gốc phía trên mỗi dòng dịch.”
 - “Chép lời standup.m4a kèm mốc thời gian.”
-- “Dịch chữ trong menu.jpg sang tiếng Việt.”
-- “Dịch các chuỗi trong locales/en.json sang tiếng Hàn, tiếng Nhật và tiếng Thái.”
+- “Làm bản tiếng Việt cho ảnh menu.jpg.”
+- “Dịch novel.epub sang tiếng Việt.”
 
 ## Tính năng
 
