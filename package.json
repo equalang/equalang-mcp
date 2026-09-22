@@ -1,7 +1,7 @@
 {
   "name": "@equalang/mcp",
-  "version": "0.2.3",
-  "mcpName": "io.github.equalang/equalang-mcp",
+  "version": "0.2.4",
+  "mcpName": "io.github.equalang-ai/equalang-mcp",
   "description": "MCP server for Equalang: translate documents, slides, spreadsheets, e-books, subtitles, pictures, audio and video with their layout kept, transcribe recordings, and translate text.",
   "type": "module",
   "bin": {

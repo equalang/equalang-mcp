@@ -1,14 +1,14 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.equalang/equalang-mcp",
+  "name": "io.github.equalang-ai/equalang-mcp",
   "description": "Translate documents, subtitles, pictures, audio and video with layout kept; transcribe recordings.",
   "repository": { "url": "https://github.com/equalang/equalang-mcp", "source": "github" },
-  "version": "0.2.3",
+  "version": "0.2.4",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@equalang/mcp",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "transport": { "type": "stdio" },
       "environmentVariables": [
         {
