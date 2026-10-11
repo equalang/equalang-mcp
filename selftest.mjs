@@ -10,6 +10,7 @@
  *   EQUALANG_API_KEY=el_... node selftest.mjs file.txt recording.mp3
  */
 import { spawn } from 'node:child_process';
+import { createServer } from 'node:http';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -99,6 +100,70 @@ check(`registers its ${expected.length} tools`, expected.every((name) => tools.s
 check('every tool carries a description a model can select on', tools.every((t) => (t.description ?? '').length > 60));
 check('the tools that spend credits say so', ['translate_file', 'transcribe_recording'].every((name) => /COSTS THE USER'S CREDITS/.test(tools.find((t) => t.name === name)?.description ?? '')));
 check('read-only tools are marked so', ['get_credit_balance', 'list_languages'].every((name) => tools.find((t) => t.name === name)?.annotations?.readOnlyHint === true));
+const formulaSchema = tools.find((t) => t.name === 'translate_file')?.inputSchema;
+check('PDF formula optimization is an optional boolean',
+  formulaSchema?.properties?.optimize_math_formula?.type === 'boolean' &&
+  !formulaSchema.required?.includes('optimize_math_formula'));
+
+console.log('\n== document options over HTTP (local fixture, no credits)');
+{
+  const requests = [];
+  const fixture = createServer(async (req, res) => {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    let data;
+    if (req.url === '/v1/jobs/translate' && req.method === 'POST') {
+      const raw = Buffer.concat(chunks);
+      let body;
+      if (req.headers['content-type']?.startsWith('multipart/')) {
+        const form = await new Response(raw, { headers: { 'Content-Type': req.headers['content-type'] } }).formData();
+        body = Object.fromEntries(form);
+        if (body.options) body.options = JSON.parse(body.options);
+        body.file = await body.file.text();
+      } else body = JSON.parse(raw.toString());
+      requests.push(body);
+      data = { job_id: 'fixture-job', credits_reserved: 1 };
+    } else if (req.url === '/v1/jobs/fixture-job') {
+      data = { job_id: 'fixture-job', task: 'translate', status: 'RUNNING', finished: false, usage: { credits_reserved: 1 } };
+    } else if (req.url === '/v1/openapi.json') {
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ components: { schemas: { DocumentLanguage: { oneOf: [{ const: 'uk', title: 'Ukrainian' }] } } } }));
+      return;
+    } else {
+      res.writeHead(404).end();
+      return;
+    }
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ data }));
+  });
+  await new Promise((done) => fixture.listen(0, '127.0.0.1', done));
+  const local = serve({ EQUALANG_API_KEY: 'el_local_fixture', EQUALANG_BASE_URL: `http://127.0.0.1:${fixture.address().port}/v1` });
+  try {
+    await local.call('initialize', INITIALIZE);
+    local.notify('notifications/initialized');
+    const file = join(local.home, 'report.pdf');
+    writeFileSync(file, '%PDF-1.7\n');
+    for (const source of [{ source: file }, { source: 'https://example.com/report.pdf' }, { file_id: 'uploaded-file' }]) {
+      for (const enabled of [undefined, true, false]) {
+        const before = requests.length;
+        const answer = await local.tool('translate_file', { ...source, target_language: 'uk', wait_seconds: 0, optimize_math_formula: enabled });
+        const sent = requests.at(-1);
+        const options = sent?.options ?? {};
+        const correctSource = source.file_id ? sent?.file_id === source.file_id :
+          source.source.startsWith('https:') ? sent?.file_url === source.source : sent?.file === '%PDF-1.7\n';
+        check(`formula ${enabled ?? 'omitted'} reaches ${source.file_id ? 'file_id' : source.source === file ? 'upload' : 'URL'}`,
+          !answer.isError && requests.length === before + 1 && correctSource && sent?.target_language === 'uk' &&
+          JSON.stringify(options) === JSON.stringify(enabled === undefined ? {} : { optimize_math_formula: enabled }), JSON.stringify(answer));
+      }
+    }
+    const catalog = await local.tool('list_languages', { kind: 'file' });
+    check('language discovery respects a deployment with a narrower catalog',
+      !catalog.isError && JSON.stringify(catalog.payload.languages) === JSON.stringify([{ code: 'uk', name: 'Ukrainian' }]));
+  } finally {
+    local.kill();
+    await new Promise((done) => fixture.close(done));
+  }
+}
 
 console.log('\n== without a key');
 const languages = await tool('list_languages', { matching: 'chinese' });

@@ -36,7 +36,7 @@ for (const [schema, fields] of Object.entries({
   JobOutput: ['kind', 'format', 'file_id', 'filename', 'download_url'],
   JobUsage: ['credits_reserved', 'credits_charged'],
   ErrorResponse: ['code', 'message', 'retryable'],
-  DocumentTranslateOptions: ['subtitle_bilingual', 'output_formats'],
+  DocumentTranslateOptions: ['subtitle_bilingual', 'output_formats', 'optimize_math_formula'],
 })) {
   const missing = fields.filter((field) => !has(schema, field));
   check(`${schema} still has ${fields.join(', ')}`, missing.length === 0, `missing ${missing.join(', ')}`);

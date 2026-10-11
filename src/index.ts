@@ -217,7 +217,7 @@ const FILE_ID = z.string().optional().describe('A file already uploaded by estim
 const OUTPUT_DIR = z.string().optional().describe(
   'Directory for the results. Defaults to beside a local source. A URL source has no "beside": without this the answer carries temporary links.');
 const WAIT = z.number().optional().describe(`Seconds to wait before answering with a job_id instead (default ${DEFAULT_WAIT_SECONDS}, at most ${MAX_WAIT_SECONDS}).`);
-const LANGUAGE = 'A language code such as en, zh-CN, zh-TW, ja, ko, es, fr, de. list_languages has the codes: fewer for files than for text.';
+const LANGUAGE = 'A language code such as en, zh-CN, zh-TW, ja, ko, es, fr, de. Read the currently available codes from list_languages for the relevant kind.';
 const COSTS = 'COSTS THE USER\'S CREDITS: say what it will cost and get their agreement first -- estimate_cost gives the number for a file.';
 
 // Every tool that writes only adds files beside existing ones, so none is
@@ -240,12 +240,13 @@ server.registerTool('translate_file', {
     target_language: z.string().describe(`Language to translate into. ${LANGUAGE}`),
     source_language: z.string().optional().describe('Language of the file; omit to detect it.'),
     bilingual: z.boolean().optional().describe('Subtitles and recordings only: keep the original line above each translated one.'),
+    optimize_math_formula: z.boolean().optional().describe('PDF only: optimize mathematical formula layout. Off by default; set true to enable or false to disable. Other file formats reject true before reserving credits.'),
     output_formats: z.array(z.enum(['srt', 'vtt', 'txt', 'json'])).optional().describe('Recordings only: the formats to write (default srt).'),
     output_dir: OUTPUT_DIR,
     wait_seconds: WAIT,
   },
-}, async ({ bilingual, output_formats, ...input }, extra) => run('translate', {
-  ...input, options: { subtitle_bilingual: bilingual, output_formats },
+}, async ({ bilingual, optimize_math_formula, output_formats, ...input }, extra) => run('translate', {
+  ...input, options: { subtitle_bilingual: bilingual, optimize_math_formula, output_formats },
 }, extra));
 
 server.registerTool('transcribe_recording', {
@@ -369,7 +370,7 @@ server.registerTool('list_languages', {
   annotations: READS,
   description: 'The language codes Equalang takes, with their names, read from the live API. Needs no key. Use it to turn a language\'s name into its code.',
   inputSchema: {
-    kind: z.enum(['file', 'text']).optional().describe('file (default): the languages translate_file takes; text: the wider set translate_text takes.'),
+    kind: z.enum(['file', 'text']).optional().describe('file (default): the currently available languages for translate_file; text: those for translate_text.'),
     matching: z.string().optional().describe('Only languages whose name or code contains this, e.g. "chinese" or "pt".'),
   },
 }, async ({ kind, matching }) => {
