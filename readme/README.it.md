@@ -35,7 +35,7 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - **Audio e video** – MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM e MKV diventano sottotitoli tradotti, oppure una trascrizione nella lingua parlata (SRT, VTT, TXT, JSON)
 - **Testo in blocco** – testi brevi tradotti nell'ordine dato, oppure un unico testo lungo (fino a 100.000 caratteri) che Equalang divide da sé in frasi
 - **Lingue** — 152 per testi e documenti; consulta l’elenco aggiornato per quelle disponibili. La lingua di origine viene rilevata se non la specifichi.
-- **Formule nei PDF** — L’ottimizzazione delle formule è facoltativa e disattivata per impostazione predefinita. Si applica solo ai file PDF. `translate_file` → `optimize_math_formula: true`
+- **Formule nei PDF** — L’ottimizzazione delle formule è facoltativa e disattivata per impostazione predefinita. Si applica solo ai file PDF. `translate_file` → `optimize_math_formula: true` La tariffa predefinita aggiunge 10 crediti per pagina del PDF originale. Usa la stessa opzione per stimare il costo. `estimate_cost` → `optimize_math_formula: true`
 
 ## Ottieni una chiave
 

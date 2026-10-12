@@ -240,7 +240,7 @@ server.registerTool('translate_file', {
     target_language: z.string().describe(`Language to translate into. ${LANGUAGE}`),
     source_language: z.string().optional().describe('Language of the file; omit to detect it.'),
     bilingual: z.boolean().optional().describe('Subtitles and recordings only: keep the original line above each translated one.'),
-    optimize_math_formula: z.boolean().optional().describe('PDF only: optimize mathematical formula layout. Off by default; set true to enable or false to disable. Other file formats reject true before reserving credits.'),
+    optimize_math_formula: z.boolean().optional().describe('PDF only: optimize mathematical formula layout. Adds a per-page surcharge (10 credits by default); pass the same option to estimate_cost. Off by default; set true to enable or false to disable. Other file formats reject true before reserving credits.'),
     output_formats: z.array(z.enum(['srt', 'vtt', 'txt', 'json'])).optional().describe('Recordings only: the formats to write (default srt).'),
     output_dir: OUTPUT_DIR,
     wait_seconds: WAIT,
@@ -303,16 +303,25 @@ server.registerTool('estimate_cost', {
     'Upload a local file without starting anything, and answer with the most a job on it can cost in credits. Free. ' +
     'Pass the returned file_id to translate_file or transcribe_recording so the file is not uploaded twice; kept_until says how long it is held. ' +
     'A recording is charged for the speech actually heard, usually less than the estimate.',
-  inputSchema: { path: z.string().describe('Absolute path to the file on this machine.') },
-}, async ({ path }) => {
+  inputSchema: {
+    path: z.string().describe('Absolute path to the file on this machine.'),
+    optimize_math_formula: z.boolean().optional().describe('Include the PDF formula optimization surcharge in credits_to_translate. Off by default.'),
+  },
+}, async ({ path, optimize_math_formula = false }) => {
   try {
     const source = sourceOf(path, undefined);
     if (!('path' in source)) throw new EqualangError('estimate_cost takes a local file; a URL is measured when its job is created.', 'INVALID_SOURCE');
     const upload = await api.upload(source.path);
     destinations.set(upload.file_id, dirname(source.path));
+    const formula = upload.quote?.formula_optimization;
+    if (optimize_math_formula && (upload.quote?.translate == null || formula?.credits == null)) {
+      throw new EqualangError('Formula optimization requires a PDF with a measured page count. Upload the PDF again or leave the option off.', 'FORMULA_QUOTE_UNAVAILABLE');
+    }
+    const base = upload.quote?.translate ?? null;
+    const total = base === null ? null : Math.round((base + (optimize_math_formula ? formula!.credits! : 0)) * 1000) / 1000;
     return text({
       file_id: upload.file_id, filename: upload.filename, size_bytes: upload.size_bytes,
-      credits_to_translate: upload.quote?.translate ?? null, credits_to_transcribe: upload.quote?.transcribe ?? null,
+      credits_to_translate: total, formula_optimization: formula ?? null, credits_to_transcribe: upload.quote?.transcribe ?? null,
       kept_until: upload.expires_at,
     });
   } catch (cause) {

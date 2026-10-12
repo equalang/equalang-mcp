@@ -35,7 +35,7 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - **Audio i wideo** – MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM i MKV stają się przetłumaczonymi napisami albo transkrypcją w języku nagrania (SRT, VTT, TXT, JSON)
 - **Teksty hurtowo** – krótkie teksty tłumaczone po kolei albo jeden długi tekst (do 100 000 znaków), który Equalang sam dzieli na zdania
 - **Języki** — 152 dla tekstów i dokumentów; aktualna lista pokazuje dostępne języki. Język źródłowy jest wykrywany automatycznie, jeśli go pominiesz.
-- **Wzory w PDF** — Optymalizacja wzorów jest opcjonalna i domyślnie wyłączona. Dotyczy tylko plików PDF. `translate_file` → `optimize_math_formula: true`
+- **Wzory w PDF** — Optymalizacja wzorów jest opcjonalna i domyślnie wyłączona. Dotyczy tylko plików PDF. `translate_file` → `optimize_math_formula: true` Domyślna stawka wynosi dodatkowe 10 kredytów za stronę oryginalnego PDF. Użyj tej samej opcji przy szacowaniu kosztu. `estimate_cost` → `optimize_math_formula: true`
 
 ## Zdobądź klucz
 

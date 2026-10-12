@@ -67,7 +67,10 @@ export type Upload = {
   extension: string;
   size_bytes: number;
   expires_at: string;
-  quote: { translate: number; transcribe: number | null } | null;
+  quote: {
+    translate: number; transcribe: number | null;
+    formula_optimization?: { credits_per_page: number; credits: number | null };
+  } | null;
 };
 
 /** What a job is made from: bytes on this machine, a public URL, or a file already uploaded. */

@@ -108,11 +108,15 @@ check('PDF formula optimization is an optional boolean',
 console.log('\n== document options over HTTP (local fixture, no credits)');
 {
   const requests = [];
+  let formulaCredits = 30;
   const fixture = createServer(async (req, res) => {
     const chunks = [];
     for await (const chunk of req) chunks.push(chunk);
     let data;
-    if (req.url === '/v1/jobs/translate' && req.method === 'POST') {
+    if (req.url === '/v1/files' && req.method === 'POST') {
+      data = { file_id: 'fixture-file', filename: 'report.pdf', size_bytes: 9, expires_at: 'later',
+        quote: { translate: 31.42, transcribe: null, formula_optimization: { credits_per_page: 10, credits: formulaCredits } } };
+    } else if (req.url === '/v1/jobs/translate' && req.method === 'POST') {
       const raw = Buffer.concat(chunks);
       let body;
       if (req.headers['content-type']?.startsWith('multipart/')) {
@@ -156,6 +160,13 @@ console.log('\n== document options over HTTP (local fixture, no credits)');
           JSON.stringify(options) === JSON.stringify(enabled === undefined ? {} : { optimize_math_formula: enabled }), JSON.stringify(answer));
       }
     }
+    for (const enabled of [false, true]) {
+      const quote = await local.tool('estimate_cost', {path: file, optimize_math_formula: enabled});
+      check(`formula estimate ${enabled} includes the accepted total`, !quote.isError && quote.payload.credits_to_translate === (enabled ? 61.42 : 31.42) && quote.payload.formula_optimization.credits === 30);
+    }
+    formulaCredits = null;
+    const unavailable = await local.tool('estimate_cost', {path: file, optimize_math_formula: true});
+    check('formula estimate refuses unavailable page counts', unavailable.isError && unavailable.payload.code === 'FORMULA_QUOTE_UNAVAILABLE');
     const catalog = await local.tool('list_languages', { kind: 'file' });
     check('language discovery respects a deployment with a narrower catalog',
       !catalog.isError && JSON.stringify(catalog.payload.languages) === JSON.stringify([{ code: 'uk', name: 'Ukrainian' }]));

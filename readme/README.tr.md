@@ -35,7 +35,7 @@ claude mcp add equalang -s user -e EQUALANG_API_KEY=el_your_key -- npx -y @equal
 - **Ses ve video** – MP3, M4A, WAV, FLAC, OGG, AAC, Opus, MP4, MOV, WebM ve MKV çevrilmiş altyazıya ya da konuşulan dilde bir döküme dönüşür (SRT, VTT, TXT, JSON)
 - **Toplu metin** – kısa metinler sırasıyla çevrilir ya da Equalang'ın cümle sınırlarından kendisinin böldüğü tek bir uzun metin (100.000 karaktere kadar)
 - **Diller** — Metinler ve belgeler için 152 dil; kullanılabilir diller için güncel listeye bakın. Kaynak dili belirtmezseniz otomatik algılanır.
-- **PDF formülleri** — Formül iyileştirme isteğe bağlıdır ve varsayılan olarak kapalıdır. Yalnızca PDF dosyalarında kullanılabilir. `translate_file` → `optimize_math_formula: true`
+- **PDF formülleri** — Formül iyileştirme isteğe bağlıdır ve varsayılan olarak kapalıdır. Yalnızca PDF dosyalarında kullanılabilir. `translate_file` → `optimize_math_formula: true` Varsayılan tarifede orijinal PDF'nin her sayfası için 10 kredi eklenir. Maliyet tahmininde de aynı seçeneği kullanın. `estimate_cost` → `optimize_math_formula: true`
 
 ## Anahtar alın
 
